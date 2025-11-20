@@ -1,25 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const slides = [
   {
     video: "/video.mp4",
-    title: "Фото",
-    caption: "Фотографии, сделанные в разных странах и городах.",
+    title: "TOLEGEND — ЭТО МЕДИА КОТОРОЕ РАБОТАЕТ",
+    caption:
+      "Продюсерский центр полного цикла с 10-летним опытом на медиарынке. Собственная студия, тысячи часов контента, сотни проектов.",
     isVisibleText: true,
   },
   {
     video: "/video.mp4",
-    title: "Видео",
-    caption: "Видео, сделанные в разных странах и городах.",
+    title: "МЫ У НАС В КОМАНДЕ",
+    caption:
+      "Продюсеры, маркетологи, режиссеры, операторы, дизайнеры — которые превращают идеи в сильный, цепляющий контент.",
     isVisibleText: true,
   },
   {
     video: "/video.mp4",
-    title: "Дизайн",
-    caption: "Дизайн, сделанный в разных странах и городах.",
+    title: "НАША ЦЕЛЬ И МИССИЯ",
+    caption:
+      "Создавать умный и результативный контент, который помогает брендам расти, госинициативам — быть услышанными, экспертам — масштабироваться.",
     isVisibleText: true,
   },
 ];
@@ -155,10 +164,8 @@ function ImageWithPlaceholder({
 
 export default function Home() {
   const router = useRouter();
-  const scrollSectionRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const currentVisibleIndexRef = useRef<number>(-1);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringLink, setIsHoveringLink] = useState(false);
@@ -192,8 +199,24 @@ export default function Home() {
     };
   }, [isGalleryOpen]);
 
-  const sectionHeight = useMemo(() => `${slides.length * 100}vh`, []);
-  const trackWidth = useMemo(() => `${slides.length * 100}vw`, []);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  const unlockVideos = () => {
+    setUserInteracted((prev) => {
+      if (prev) return prev;
+
+      setTimeout(() => {
+        videoRefs.current.forEach((video) => {
+          if (video && (video.paused || video.ended)) {
+            video.play().catch(() => {});
+          }
+        });
+      }, 0);
+
+      return true;
+    });
+  };
 
   useEffect(() => {
     const isTouchDevice =
@@ -256,199 +279,234 @@ export default function Home() {
   useEffect(() => {
     const startAllVideos = () => {
       videoRefs.current.forEach((video) => {
-        if (video && video.paused && video.readyState >= 2) {
-          video.play().catch(() => {});
+        if (video) {
+          if (video.readyState >= 2) {
+            if (video.paused) {
+              video.play().catch(() => {
+                setTimeout(() => {
+                  video.play().catch(() => {});
+                }, 100);
+              });
+            }
+          } else {
+            const handleCanPlay = () => {
+              if (video.paused) {
+                video.play().catch(() => {
+                  setTimeout(() => {
+                    video.play().catch(() => {});
+                  }, 100);
+                });
+              }
+              video.removeEventListener("canplay", handleCanPlay);
+            };
+            video.addEventListener("canplay", handleCanPlay, { once: true });
+          }
         }
       });
     };
 
     startAllVideos();
 
-    const cleanupFunctions: (() => void)[] = [];
+    const interval = setInterval(() => {
+      if (!userInteracted) return;
+      const activeVideo = videoRefs.current[currentSlideIndex];
+      if (activeVideo && activeVideo.paused && activeVideo.readyState >= 2) {
+        activeVideo.play().catch(() => {});
+      }
+    }, 150);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [currentSlideIndex, userInteracted]);
+
+  const updateVideoSound = (activeIndex: number) => {
+    const videos = videoRefs.current;
+    const activeVideo = videos[activeIndex];
+
+    if (activeVideo) {
+      const forcePlayActive = () => {
+        if (!userInteracted) {
+          return;
+        }
+        if (activeVideo.paused || activeVideo.ended) {
+          activeVideo.play().catch(() => {});
+        }
+      };
+
+      if (activeVideo.readyState >= 2) {
+        forcePlayActive();
+        setTimeout(() => forcePlayActive(), 10);
+        setTimeout(() => forcePlayActive(), 50);
+        setTimeout(() => forcePlayActive(), 100);
+      } else {
+        const handleCanPlay = () => {
+          forcePlayActive();
+          setTimeout(() => forcePlayActive(), 10);
+          setTimeout(() => forcePlayActive(), 50);
+          activeVideo.removeEventListener("canplay", handleCanPlay);
+        };
+        activeVideo.addEventListener("canplay", handleCanPlay, { once: true });
+        activeVideo.load();
+      }
+    }
+
+    for (let i = 0; i < videos.length; i++) {
+      const video = videos[i];
+      if (!video) continue;
+
+      const isActive = i === activeIndex;
+      const shouldHaveSound = isSoundOn && isActive;
+
+      if (!video.paused && video.playbackRate !== 1) {
+        video.playbackRate = 1;
+      }
+
+      if (shouldHaveSound) {
+        if (video.readyState < 3) {
+          video.preload = "auto";
+        }
+        if (video.muted) {
+          video.muted = false;
+          video.volume = 1;
+        }
+      } else if (!video.muted) {
+        video.muted = true;
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateVideoSound(currentSlideIndex);
+  }, [currentSlideIndex, isSoundOn]);
+
+  useEffect(() => {
+    const checkAndPlayVideos = () => {
+      if (!userInteracted) return;
+      const activeVideo = videoRefs.current[currentSlideIndex];
+
+      if (activeVideo && activeVideo.readyState >= 2) {
+        if (activeVideo.paused || activeVideo.ended) {
+          activeVideo.play().catch(() => {
+            setTimeout(() => {
+              if (activeVideo.paused) {
+                activeVideo.play().catch(() => {});
+              }
+            }, 100);
+          });
+        }
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          const videoIndex = videoRefs.current.indexOf(video);
+          const isActive = videoIndex === currentSlideIndex;
+
+          if (
+            entry.isIntersecting &&
+            entry.intersectionRatio > 0.5 &&
+            isActive
+          ) {
+            if (video.paused || video.ended) {
+              video.play().catch(() => {
+                setTimeout(() => {
+                  video.play().catch(() => {});
+                }, 100);
+              });
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
     videoRefs.current.forEach((video) => {
       if (video) {
-        const handleCanPlay = () => {
-          if (video.paused) {
-            video.play().catch(() => {});
-          }
-        };
-        video.addEventListener("canplay", handleCanPlay);
-        cleanupFunctions.push(() => {
-          video.removeEventListener("canplay", handleCanPlay);
-        });
+        observer.observe(video);
       }
     });
 
+    checkAndPlayVideos();
+    setTimeout(() => checkAndPlayVideos(), 50);
+    setTimeout(() => checkAndPlayVideos(), 150);
+    const interval = setInterval(checkAndPlayVideos, 100);
+
     return () => {
-      cleanupFunctions.forEach((cleanup) => cleanup());
+      clearInterval(interval);
+      videoRefs.current.forEach((video) => {
+        if (video) {
+          observer.unobserve(video);
+        }
+      });
     };
-  }, []);
+  }, [currentSlideIndex, userInteracted]);
 
   useEffect(() => {
-    const section = scrollSectionRef.current;
-    const track = trackRef.current;
-    if (!section || !track) return;
+    const swiper = swiperRef.current;
+    if (!swiper) return;
 
-    let horizontalScrollPosition = 0;
-    const maxTranslate = track.scrollWidth - window.innerWidth;
+    let touchStartY = 0;
+    let touchStartX = 0;
 
-    const updateTrackPosition = (translate: number) => {
-      const clampedTranslate = Math.max(0, Math.min(translate, maxTranslate));
-      track.style.transform = `translateX(-${clampedTranslate}px)`;
-      return clampedTranslate;
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
     };
 
-    const handleScroll = () => {
-      if (!section || !track) return;
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartY || !touchStartX) return;
+      const touch = e.touches[0];
+      const deltaY = touch.clientY - touchStartY;
+      const deltaX = touch.clientX - touchStartX;
+      const absDeltaY = Math.abs(deltaY);
+      const absDeltaX = Math.abs(deltaX);
 
-      const scrollTop = window.scrollY - section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const windowHeight = window.innerHeight;
-      const totalScrollable = sectionHeight - windowHeight;
-
-      if (totalScrollable <= 0) return;
-
-      const progress = Math.min(Math.max(scrollTop / totalScrollable, 0), 1);
-      horizontalScrollPosition = progress * maxTranslate;
-      updateTrackPosition(horizontalScrollPosition);
-      updateVisibleVideo();
+      if (absDeltaY > absDeltaX && absDeltaY > 30) {
+        e.preventDefault();
+        const direction = deltaY > 0 ? 1 : -1;
+        if (direction > 0) {
+          swiper.slideNext();
+        } else {
+          swiper.slidePrev();
+        }
+        touchStartY = 0;
+        touchStartX = 0;
+      }
     };
 
     const handleWheel = (e: WheelEvent) => {
-      if (!section || !track) return;
-
-      const deltaX = e.deltaX;
       const deltaY = e.deltaY;
+      const deltaX = e.deltaX;
+      const absDeltaY = Math.abs(deltaY);
+      const absDeltaX = Math.abs(deltaX);
 
-      if (deltaX === 0 || Math.abs(deltaX) < Math.abs(deltaY)) return;
-
-      const rect = section.getBoundingClientRect();
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-      if (
-        clientX < rect.left ||
-        clientX > rect.right ||
-        clientY < rect.top ||
-        clientY > rect.bottom
-      ) {
-        return;
+      if (absDeltaY > absDeltaX && absDeltaY > 10) {
+        e.preventDefault();
+        const direction = deltaY > 0 ? 1 : -1;
+        if (direction > 0) {
+          swiper.slideNext();
+        } else {
+          swiper.slidePrev();
+        }
       }
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (maxTranslate <= 0) return;
-
-      const sectionHeight = section.offsetHeight;
-      const windowHeight = window.innerHeight;
-      const totalScrollable = sectionHeight - windowHeight;
-
-      if (totalScrollable <= 0) return;
-
-      const scrollRatio = totalScrollable / maxTranslate;
-      const currentScrollTop = Math.max(0, window.scrollY - section.offsetTop);
-      const deltaY_scroll = deltaX * scrollRatio;
-      const newScrollTop = Math.max(
-        0,
-        Math.min(currentScrollTop + deltaY_scroll, totalScrollable)
-      );
-
-      window.scrollTo({
-        top: section.offsetTop + newScrollTop,
-        behavior: "auto",
-      });
     };
 
-    let updateVideoRafId: number | null = null;
-    const videos = videoRefs.current;
-    const videosLength = videos.length;
+    const swiperEl = swiper.el;
+    swiperEl.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    swiperEl.addEventListener("touchmove", handleTouchMove, { passive: false });
+    swiperEl.addEventListener("wheel", handleWheel, { passive: false });
 
-    const updateVisibleVideo = () => {
-      if (updateVideoRafId !== null) return;
-
-      updateVideoRafId = requestAnimationFrame(() => {
-        if (!trackRef.current) {
-          updateVideoRafId = null;
-          return;
-        }
-
-        const viewportCenter = window.innerWidth * 0.5;
-        let maxVisibleArea = 0;
-        let mostVisibleIndex = 0;
-
-        for (let i = 0; i < videosLength; i++) {
-          const video = videos[i];
-          if (!video) continue;
-
-          const videoRect = video.getBoundingClientRect();
-          const videoCenter = videoRect.left + videoRect.width * 0.5;
-          const distanceFromCenter = Math.abs(viewportCenter - videoCenter);
-          const visibleArea = Math.max(
-            0,
-            videoRect.width - distanceFromCenter * 2
-          );
-
-          if (visibleArea > maxVisibleArea) {
-            maxVisibleArea = visibleArea;
-            mostVisibleIndex = i;
-          }
-        }
-
-        const prevIndex = currentVisibleIndexRef.current;
-        if (prevIndex !== mostVisibleIndex && prevIndex !== -1) {
-          setIsSoundOn(false);
-        }
-        currentVisibleIndexRef.current = mostVisibleIndex;
-
-        for (let i = 0; i < videosLength; i++) {
-          const video = videos[i];
-          if (!video) continue;
-
-          const isActive = i === mostVisibleIndex;
-          const shouldHaveSound = isSoundOn && isActive;
-
-          if (
-            !video.paused &&
-            video.playbackRate !== 1 &&
-            video.playbackRate !== 0
-          ) {
-            video.playbackRate = 1;
-          }
-
-          if (video.paused && video.readyState >= 2) {
-            video.play().catch(() => {});
-          }
-          if (shouldHaveSound) {
-            if (video.readyState < 3) {
-              video.preload = "auto";
-            }
-            if (video.muted) {
-              video.muted = false;
-              video.volume = 1;
-            }
-          } else if (!video.muted) {
-            video.muted = true;
-          }
-        }
-
-        updateVideoRafId = null;
-      });
-    };
-
-    handleScroll();
-    updateVisibleVideo();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-    window.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
-      if (updateVideoRafId !== null) {
-        cancelAnimationFrame(updateVideoRafId);
-      }
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-      window.removeEventListener("wheel", handleWheel);
+      swiperEl.removeEventListener("touchstart", handleTouchStart);
+      swiperEl.removeEventListener("touchmove", handleTouchMove);
+      swiperEl.removeEventListener("wheel", handleWheel);
     };
-  }, [isSoundOn]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
@@ -540,22 +598,92 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <div
-        ref={scrollSectionRef}
-        style={{ height: sectionHeight }}
-        className="relative"
-      >
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <div
-            ref={trackRef}
-            className="flex h-full will-change-transform"
-            style={{ width: trackWidth }}
-          >
-            {slides.map((slide, index) => (
+      <div className="relative h-screen">
+        <Swiper
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            const swiperEl = swiper.el;
+            const handleInteraction = () => {
+              unlockVideos();
+            };
+            swiperEl.addEventListener("touchstart", handleInteraction, {
+              once: true,
+            });
+            swiperEl.addEventListener("click", handleInteraction, {
+              once: true,
+            });
+            swiperEl.addEventListener("wheel", handleInteraction, {
+              once: true,
+            });
+          }}
+          onSlideChange={(swiper) => {
+            unlockVideos();
+            const newIndex = swiper.activeIndex;
+            setIsSoundOn(false);
+            setCurrentSlideIndex(newIndex);
+
+            const video = videoRefs.current[newIndex];
+            if (!video) {
+              return;
+            }
+
+            const forcePlay = () => {
+              if (!userInteracted) {
+                return;
+              }
+              if (video.paused || video.ended) {
+                video.play().catch(() => {});
+              }
+            };
+
+            if (video.readyState >= 2) {
+              forcePlay();
+              setTimeout(() => forcePlay(), 10);
+              setTimeout(() => forcePlay(), 50);
+              setTimeout(() => forcePlay(), 100);
+              setTimeout(() => forcePlay(), 200);
+            } else {
+              const handleCanPlay = () => {
+                forcePlay();
+                setTimeout(() => forcePlay(), 10);
+                setTimeout(() => forcePlay(), 50);
+                video.removeEventListener("canplay", handleCanPlay);
+              };
+              video.addEventListener("canplay", handleCanPlay, { once: true });
+              video.load();
+            }
+
+            updateVideoSound(newIndex);
+          }}
+          modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+          spaceBetween={0}
+          slidesPerView={1}
+          speed={800}
+          mousewheel={{
+            forceToAxis: false,
+            sensitivity: 1,
+            releaseOnEdges: true,
+            eventsTarget: "container",
+          }}
+          keyboard={{
+            enabled: true,
+          }}
+          allowTouchMove={true}
+          touchEventsTarget="container"
+          touchRatio={1}
+          threshold={10}
+          navigation={{
+            nextEl: ".swiper-button-next-custom",
+            prevEl: ".swiper-button-prev-custom",
+          }}
+          className="h-full w-full [&_.swiper-pagination]:hidden"
+        >
+          {slides.map((slide, index) => (
+            <SwiperSlide key={slide.title}>
               <section
-                key={slide.title}
-                className="relative h-full w-screen shrink-0 cursor-pointer"
+                className="relative h-full w-full cursor-pointer"
                 onClick={() => {
+                  unlockVideos();
                   setSelectedSlideIndex(index);
                   setIsGalleryOpen(true);
                 }}
@@ -570,6 +698,7 @@ export default function Home() {
                   loop
                   muted
                   playsInline
+                  preload="auto"
                 />
                 <div
                   className={`absolute inset-0 bg-black transition-opacity duration-1000 ease-in-out ${
@@ -578,27 +707,69 @@ export default function Home() {
                 />
                 {slide.isVisibleText && (
                   <div
-                    className={`relative z-10 flex h-full flex-col items-center justify-center gap-6 px-6 text-center transition-opacity duration-1000 ease-in-out ${
+                    className={`relative z-10 flex h-full flex-col items-center justify-center gap-3 px-4 text-center transition-opacity duration-1000 ease-in-out md:gap-6 md:px-6 ${
                       isSoundOn ? "opacity-0" : "opacity-100"
                     }`}
                   >
-                    <div className="rounded-2xl bg-black/20 px-8 py-6 backdrop-blur-md">
-                      <p className="text-xs uppercase tracking-[0.7em] text-(--color-peach)">
+                    <div className="rounded-2xl bg-black/20 px-4 py-4 backdrop-blur-md md:px-8 md:py-6">
+                      <p className="text-[10px] uppercase tracking-[0.5em] text-(--color-peach) md:text-xs md:tracking-[0.7em]">
                         TOLEGEND
                       </p>
-                      <h1 className="mt-4 text-4xl font-semibold text-white md:text-6xl">
+                      <h1 className="mt-2 text-xl font-semibold text-white md:mt-4 md:text-4xl lg:text-6xl">
                         {slide.title}
                       </h1>
-                      <p className="mt-4 max-w-2xl text-lg text-white/80">
+                      <p className="mt-2 max-w-2xl text-sm text-white/80 md:mt-4 md:text-base lg:text-lg">
                         {slide.caption}
                       </p>
                     </div>
                   </div>
                 )}
               </section>
-            ))}
-          </div>
-        </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <button
+          className="swiper-button-prev-custom fixed left-6 top-1/2 z-50 hidden -translate-y-1/2 md:flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
+          aria-label="Предыдущий слайд"
+          onMouseEnter={() => setIsHoveringLink(true)}
+          onMouseLeave={() => setIsHoveringLink(false)}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <button
+          className="swiper-button-next-custom fixed right-6 top-1/2 z-50 hidden -translate-y-1/2 md:flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
+          aria-label="Следующий слайд"
+          onMouseEnter={() => setIsHoveringLink(true)}
+          onMouseLeave={() => setIsHoveringLink(false)}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
       </div>
       <div
         className="pointer-events-none fixed z-[10000] mix-blend-difference"
@@ -634,7 +805,10 @@ export default function Home() {
         />
       </div>
       <button
-        onClick={() => setIsSoundOn(!isSoundOn)}
+        onClick={() => {
+          unlockVideos();
+          setIsSoundOn(!isSoundOn);
+        }}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
         aria-label={isSoundOn ? "Выключить звук" : "Включить звук"}
       >
