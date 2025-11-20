@@ -711,14 +711,14 @@ export default function Home() {
                       isSoundOn ? "opacity-0" : "opacity-100"
                     }`}
                   >
-                    <div className="rounded-2xl bg-black/20 px-4 py-4 backdrop-blur-md md:px-8 md:py-6">
+                    <div className="rounded-2xl bg-black/20 px-4 py-4 backdrop-blur-md md:px-8 md:py-6 max-w-4xl flex flex-col items-center justify-center">
                       <p className="text-[10px] uppercase tracking-[0.5em] text-(--color-peach) md:text-xs md:tracking-[0.7em]">
                         TOLEGEND
                       </p>
                       <h1 className="mt-2 text-xl font-semibold text-white md:mt-4 md:text-4xl lg:text-6xl">
                         {slide.title}
                       </h1>
-                      <p className="mt-2 max-w-2xl text-sm text-white/80 md:mt-4 md:text-base lg:text-lg">
+                      <p className="mt-2 max-w-2xl text-sm text-white/80 md:mt-4 md:text-base lg:text-lg text-center w-[100%]">
                         {slide.caption}
                       </p>
                     </div>
