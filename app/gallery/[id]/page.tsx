@@ -2,6 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
+import NProgress from "nprogress";
 
 const galleryImages = [
   {
@@ -147,6 +148,7 @@ export default function GalleryItemPage() {
   useEffect(() => {
     const foundImage = galleryImages.find((img) => img.id === id);
     if (!foundImage) {
+      NProgress.start();
       router.push("/");
       return;
     }
@@ -218,7 +220,10 @@ export default function GalleryItemPage() {
   return (
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
       <button
-        onClick={() => router.back()}
+        onClick={() => {
+          NProgress.start();
+          router.back();
+        }}
         onMouseEnter={() => setIsHoveringLink(true)}
         onMouseLeave={() => setIsHoveringLink(false)}
         className="fixed top-6 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"

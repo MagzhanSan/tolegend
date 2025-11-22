@@ -2,38 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import NProgress from "nprogress";
 
 const slides = [
   {
     video: "/video.mp4",
-    title: "TOLEGEND — ЭТО МЕДИА КОТОРОЕ РАБОТАЕТ",
-    caption:
-      "Продюсерский центр полного цикла с 10-летним опытом на медиарынке. Собственная студия, тысячи часов контента, сотни проектов.",
+    title: "Фото",
     isVisibleText: true,
   },
   {
     video: "/video.mp4",
-    title: "МЫ У НАС В КОМАНДЕ",
-    caption:
-      "Продюсеры, маркетологи, режиссеры, операторы, дизайнеры — которые превращают идеи в сильный, цепляющий контент.",
+    title: "Дизайн",
     isVisibleText: true,
   },
   {
     video: "/video.mp4",
-    title: "НАША ЦЕЛЬ И МИССИЯ",
-    caption:
-      "Создавать умный и результативный контент, который помогает брендам расти, госинициативам — быть услышанными, экспертам — масштабироваться.",
+    title: "Продакшн",
     isVisibleText: true,
   },
 ];
 
-const galleryImages = [
+const photoImages = [
   {
     id: 1,
     src: "/projects/rugby-1.jpg",
@@ -60,14 +49,6 @@ const galleryImages = [
   },
   {
     id: 4,
-    src: "/projects/workers-year-2.jpg",
-    alt: "Год рабочих профессий Билборды",
-    title: "ГОД РАБОЧИХ ПРОФЕССИЙ",
-    description:
-      "Создание рекламных материалов для проекта 'Год рабочих профессий'. Билборды, флаги и промо-материалы с портретами рабочих и мотивирующими слоганами.",
-  },
-  {
-    id: 5,
     src: "/projects/jetisu-1.jpg",
     alt: "Туристический бренд Жетысу",
     title: "ТУРИСТИЧЕСКИЙ БРЕНД ДЛЯ ОБЛАСТИ ЖЕТЫСУ",
@@ -75,15 +56,7 @@ const galleryImages = [
       "Разработка туристического бренда JETISU для области Жетысу. Создание логотипа, вдохновленного природными элементами региона: горами, полями, рассветами, реками и подводным миром.",
   },
   {
-    id: 6,
-    src: "/projects/jetisu-2.jpg",
-    alt: "JETISU Брендинг",
-    title: "JETISU",
-    description:
-      "Визуальная идентичность туристического бренда JETISU. Применение на билбордах, флагах и рекламных материалах с использованием цветовой палитры, отражающей природное разнообразие региона.",
-  },
-  {
-    id: 7,
+    id: 5,
     src: "/projects/abstract-1.jpg",
     alt: "Абстрактная графика",
     title: "АБСТРАКТНАЯ ГРАФИКА",
@@ -91,12 +64,28 @@ const galleryImages = [
       "Создание абстрактных визуальных элементов с использованием органических форм и геометрических структур. Работа с цветовыми градиентами и современными дизайн-решениями.",
   },
   {
-    id: 8,
+    id: 6,
     src: "/projects/dragon-1.jpg",
     alt: "Пиксельный дракон",
     title: "ПИКСЕЛЬНЫЙ ДРАКОН",
     description:
       "Стилизованный дракон в технике пиксель-арт с элементами оригами. Современная интерпретация традиционных мотивов с использованием цифровых технологий.",
+  },
+  {
+    id: 7,
+    src: "/projects/workers-year-2.jpg",
+    alt: "Год рабочих профессий Билборды",
+    title: "ГОД РАБОЧИХ ПРОФЕССИЙ",
+    description:
+      "Создание рекламных материалов для проекта 'Год рабочих профессий'. Билборды, флаги и промо-материалы с портретами рабочих и мотивирующими слоганами.",
+  },
+  {
+    id: 8,
+    src: "/projects/jetisu-2.jpg",
+    alt: "JETISU Брендинг",
+    title: "JETISU",
+    description:
+      "Визуальная идентичность туристического бренда JETISU. Применение на билбордах, флагах и рекламных материалах с использованием цветовой палитры, отражающей природное разнообразие региона.",
   },
   {
     id: 9,
@@ -105,6 +94,164 @@ const galleryImages = [
     title: "ГРАДИЕНТНЫЙ ДРАКОН",
     description:
       "Геометрическая интерпретация дракона с градиентной заливкой. Минималистичный дизайн с акцентом на форму и цветовые переходы.",
+  },
+];
+
+const designImages = [
+  {
+    id: 9,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 8,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 7,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 6,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 5,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 4,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 3,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 2,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 1,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+];
+
+const productionImages = [
+  {
+    id: 10,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 9,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 8,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 7,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 6,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 5,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 4,
+    src: "/projects/jetisu-1.jpg",
+    alt: "Продакшн проект 7",
+    title: "ПРОДАКШН ПРОЕКТ 7",
+    description:
+      "Документальный видеопродакшн с профессиональной съемкой. Создание качественного контента для бренда.",
+  },
+  {
+    id: 3,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 2,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
+  },
+  {
+    id: 1,
+    src: "/projects/rugby-1.jpg",
+    alt: "Ребрендинг Федерации Регби РК",
+    title: "РЕБРЕНДИНГ ФЕДЕРАЦИИ РЕГБИ РК",
+    description:
+      "Обновление визуального стиля всей федерации. Разработка брендбука, логотипа, визуальных стандартов. Единый современный образ, адаптированный под международные площадки.",
   },
 ];
 
@@ -164,14 +311,13 @@ function ImageWithPlaceholder({
 
 export default function Home() {
   const router = useRouter();
-  const swiperRef = useRef<SwiperType | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringLink, setIsHoveringLink] = useState(false);
-  const [isSoundOn, setIsSoundOn] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
+  const [hoveredVideoIndex, setHoveredVideoIndex] = useState<number | null>(null);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (isGalleryOpen) {
@@ -199,7 +345,6 @@ export default function Home() {
     };
   }, [isGalleryOpen]);
 
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
 
   const unlockVideos = () => {
@@ -309,107 +454,43 @@ export default function Home() {
 
     const interval = setInterval(() => {
       if (!userInteracted) return;
-      const activeVideo = videoRefs.current[currentSlideIndex];
-      if (activeVideo && activeVideo.paused && activeVideo.readyState >= 2) {
-        activeVideo.play().catch(() => {});
-      }
+      videoRefs.current.forEach((video) => {
+        if (video && video.paused && video.readyState >= 2) {
+          video.play().catch(() => {});
+        }
+      });
     }, 150);
 
     return () => {
       clearInterval(interval);
     };
-  }, [currentSlideIndex, userInteracted]);
+  }, [userInteracted]);
 
-  const updateVideoSound = (activeIndex: number) => {
-    const videos = videoRefs.current;
-    const activeVideo = videos[activeIndex];
-
-    if (activeVideo) {
-      const forcePlayActive = () => {
-        if (!userInteracted) {
-          return;
-        }
-        if (activeVideo.paused || activeVideo.ended) {
-          activeVideo.play().catch(() => {});
-        }
-      };
-
-      if (activeVideo.readyState >= 2) {
-        forcePlayActive();
-        setTimeout(() => forcePlayActive(), 10);
-        setTimeout(() => forcePlayActive(), 50);
-        setTimeout(() => forcePlayActive(), 100);
-      } else {
-        const handleCanPlay = () => {
-          forcePlayActive();
-          setTimeout(() => forcePlayActive(), 10);
-          setTimeout(() => forcePlayActive(), 50);
-          activeVideo.removeEventListener("canplay", handleCanPlay);
-        };
-        activeVideo.addEventListener("canplay", handleCanPlay, { once: true });
-        activeVideo.load();
-      }
-    }
-
-    for (let i = 0; i < videos.length; i++) {
-      const video = videos[i];
-      if (!video) continue;
-
-      const isActive = i === activeIndex;
-      const shouldHaveSound = isSoundOn && isActive;
-
-      if (!video.paused && video.playbackRate !== 1) {
-        video.playbackRate = 1;
-      }
-
-      if (shouldHaveSound) {
-        if (video.readyState < 3) {
-          video.preload = "auto";
-        }
-        if (video.muted) {
-          video.muted = false;
-          video.volume = 1;
-        }
-      } else if (!video.muted) {
-        video.muted = true;
-      }
-    }
-  };
-
-  useEffect(() => {
-    updateVideoSound(currentSlideIndex);
-  }, [currentSlideIndex, isSoundOn]);
 
   useEffect(() => {
     const checkAndPlayVideos = () => {
       if (!userInteracted) return;
-      const activeVideo = videoRefs.current[currentSlideIndex];
-
-      if (activeVideo && activeVideo.readyState >= 2) {
-        if (activeVideo.paused || activeVideo.ended) {
-          activeVideo.play().catch(() => {
-            setTimeout(() => {
-              if (activeVideo.paused) {
-                activeVideo.play().catch(() => {});
-              }
-            }, 100);
-          });
+      videoRefs.current.forEach((video) => {
+        if (video && video.readyState >= 2) {
+          if (video.paused || video.ended) {
+            video.play().catch(() => {
+              setTimeout(() => {
+                if (video && video.paused) {
+                  video.play().catch(() => {});
+                }
+              }, 100);
+            });
+          }
         }
-      }
+      });
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          const videoIndex = videoRefs.current.indexOf(video);
-          const isActive = videoIndex === currentSlideIndex;
 
-          if (
-            entry.isIntersecting &&
-            entry.intersectionRatio > 0.5 &&
-            isActive
-          ) {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
             if (video.paused || video.ended) {
               video.play().catch(() => {
                 setTimeout(() => {
@@ -442,71 +523,43 @@ export default function Home() {
         }
       });
     };
-  }, [currentSlideIndex, userInteracted]);
+  }, [userInteracted]);
 
+  // Установка адаптивных высот для галереи
   useEffect(() => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
+    if (!isGalleryOpen) return;
 
-    let touchStartY = 0;
-    let touchStartX = 0;
+    const updateHeights = () => {
+      const items = document.querySelectorAll('.gallery-image-item');
+      items.forEach((item) => {
+        const mobile = item.getAttribute('data-height-mobile');
+        const tablet = item.getAttribute('data-height-tablet');
+        const desktop = item.getAttribute('data-height-desktop');
+        
+        if (!mobile || !tablet || !desktop) return;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-      touchStartX = e.touches[0].clientX;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!touchStartY || !touchStartX) return;
-      const touch = e.touches[0];
-      const deltaY = touch.clientY - touchStartY;
-      const deltaX = touch.clientX - touchStartX;
-      const absDeltaY = Math.abs(deltaY);
-      const absDeltaX = Math.abs(deltaX);
-
-      if (absDeltaY > absDeltaX && absDeltaY > 30) {
-        e.preventDefault();
-        const direction = deltaY > 0 ? 1 : -1;
-        if (direction > 0) {
-          swiper.slideNext();
+        const width = window.innerWidth;
+        let height: string;
+        
+        if (width >= 1024) {
+          height = `${desktop}rem`;
+        } else if (width >= 640) {
+          height = `${tablet}rem`;
         } else {
-          swiper.slidePrev();
+          height = `${mobile}rem`;
         }
-        touchStartY = 0;
-        touchStartX = 0;
-      }
+        
+        (item as HTMLElement).style.height = height;
+      });
     };
 
-    const handleWheel = (e: WheelEvent) => {
-      const deltaY = e.deltaY;
-      const deltaX = e.deltaX;
-      const absDeltaY = Math.abs(deltaY);
-      const absDeltaX = Math.abs(deltaX);
-
-      if (absDeltaY > absDeltaX && absDeltaY > 10) {
-        e.preventDefault();
-        const direction = deltaY > 0 ? 1 : -1;
-        if (direction > 0) {
-          swiper.slideNext();
-        } else {
-          swiper.slidePrev();
-        }
-      }
-    };
-
-    const swiperEl = swiper.el;
-    swiperEl.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    swiperEl.addEventListener("touchmove", handleTouchMove, { passive: false });
-    swiperEl.addEventListener("wheel", handleWheel, { passive: false });
-
+    updateHeights();
+    window.addEventListener('resize', updateHeights);
+    
     return () => {
-      swiperEl.removeEventListener("touchstart", handleTouchStart);
-      swiperEl.removeEventListener("touchmove", handleTouchMove);
-      swiperEl.removeEventListener("wheel", handleWheel);
+      window.removeEventListener('resize', updateHeights);
     };
-  }, []);
+  }, [isGalleryOpen, selectedVideoIndex]);
 
   return (
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
@@ -579,8 +632,8 @@ export default function Home() {
             </a>
             <a
               href="https://www.tiktok.com/@tolegend.art"
-              target="_blank"
-              rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
               onMouseEnter={() => setIsHoveringLink(true)}
               onMouseLeave={() => setIsHoveringLink(false)}
               className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/70 transition hover:border-(--color-peach) hover:bg-(--color-peach)/20 hover:text-(--color-peach)"
@@ -598,178 +651,82 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <div className="relative h-screen">
-        <Swiper
-          onSwiper={(swiper) => {
-            swiperRef.current = swiper;
-            const swiperEl = swiper.el;
-            const handleInteraction = () => {
-              unlockVideos();
-            };
-            swiperEl.addEventListener("touchstart", handleInteraction, {
-              once: true,
-            });
-            swiperEl.addEventListener("click", handleInteraction, {
-              once: true,
-            });
-            swiperEl.addEventListener("wheel", handleInteraction, {
-              once: true,
-            });
-          }}
-          onSlideChange={(swiper) => {
-            unlockVideos();
-            const newIndex = swiper.activeIndex;
-            setIsSoundOn(false);
-            setCurrentSlideIndex(newIndex);
-
-            const video = videoRefs.current[newIndex];
-            if (!video) {
-              return;
-            }
-
-            const forcePlay = () => {
-              if (!userInteracted) {
-                return;
-              }
-              if (video.paused || video.ended) {
-                video.play().catch(() => {});
-              }
-            };
-
-            if (video.readyState >= 2) {
-              forcePlay();
-              setTimeout(() => forcePlay(), 10);
-              setTimeout(() => forcePlay(), 50);
-              setTimeout(() => forcePlay(), 100);
-              setTimeout(() => forcePlay(), 200);
+      <div 
+        className="relative flex flex-col md:flex-row md:h-screen md:overflow-hidden"
+        onTouchStart={() => unlockVideos()}
+        onClick={() => unlockVideos()}
+        onWheel={() => unlockVideos()}
+      >
+        {slides.map((slide, index) => {
+          const isHovered = hoveredVideoIndex === index;
+          const hasHoveredVideo = hoveredVideoIndex !== null;
+          
+          // Определяем ширину видео: на мобильных всегда w-full, на десктопе с hover эффектом
+          let widthClass = "w-full md:w-1/3";
+          if (hasHoveredVideo) {
+            if (isHovered) {
+              widthClass = "w-full md:w-[80%]";
             } else {
-              const handleCanPlay = () => {
-                forcePlay();
-                setTimeout(() => forcePlay(), 10);
-                setTimeout(() => forcePlay(), 50);
-                video.removeEventListener("canplay", handleCanPlay);
-              };
-              video.addEventListener("canplay", handleCanPlay, { once: true });
-              video.load();
+              widthClass = "w-full md:w-[10%]";
             }
+          }
 
-            updateVideoSound(newIndex);
-          }}
-          modules={[Navigation, Pagination, Mousewheel, Keyboard]}
-          spaceBetween={0}
-          slidesPerView={1}
-          speed={800}
-          mousewheel={{
-            forceToAxis: false,
-            sensitivity: 1,
-            releaseOnEdges: true,
-            eventsTarget: "container",
-          }}
-          keyboard={{
-            enabled: true,
-          }}
-          allowTouchMove={true}
-          touchEventsTarget="container"
-          touchRatio={1}
-          threshold={10}
-          navigation={{
-            nextEl: ".swiper-button-next-custom",
-            prevEl: ".swiper-button-prev-custom",
-          }}
-          className="h-full w-full [&_.swiper-pagination]:hidden"
-        >
-          {slides.map((slide, index) => (
-            <SwiperSlide key={slide.title}>
-              <section
-                className="relative h-full w-full cursor-pointer"
-                onClick={() => {
-                  unlockVideos();
-                  setSelectedSlideIndex(index);
-                  setIsGalleryOpen(true);
+          return (
+            <section
+              key={slide.title}
+              className={`relative h-screen md:h-full shrink-0 ${widthClass} cursor-pointer transition-all duration-700 ease-in-out`}
+              style={{
+                height: '100vh',
+                minHeight: '100vh',
+                maxHeight: '100vh',
+              }}
+              onMouseEnter={() => setHoveredVideoIndex(index)}
+              onMouseLeave={() => setHoveredVideoIndex(null)}
+              onClick={() => {
+                unlockVideos();
+                setSelectedVideoIndex(index);
+                setIsGalleryOpen(true);
+              }}
+            >
+              <video
+                ref={(el) => {
+                  videoRefs.current[index] = el;
                 }}
+                className="absolute inset-0 h-full w-full object-cover"
+                src={slide.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+              />
+              <div
+                className={`absolute inset-0 bg-black transition-opacity duration-700 ease-in-out ${
+                  isHovered ? "opacity-0" : "opacity-70"
+                }`}
+              />
+            {slide.isVisibleText && (
+              <div
+                className="absolute bottom-0 left-0 right-0 z-10 flex items-end justify-center px-6 pb-8 transition-all duration-700 ease-in-out md:pb-12"
               >
-                <video
-                  ref={(el) => {
-                    videoRefs.current[index] = el;
-                  }}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  src={slide.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                />
-                <div
-                  className={`absolute inset-0 bg-black transition-opacity duration-1000 ease-in-out ${
-                    isSoundOn ? "opacity-0" : "opacity-70"
+                <div className="relative mix-blend-screen">
+                  <h1 
+                    style={{ fontFamily: 'var(--font-share-tech)' }}
+                    className={`italic font-light uppercase tracking-[0.3em] text-gray-200 transition-all duration-700 ease-in-out ${
+                    isHovered 
+                      ? "text-sm md:text-sm lg:text-base opacity-50" 
+                      : "text-base md:text-base lg:text-xl opacity-80"
                   }`}
-                />
-                {slide.isVisibleText && (
-                  <div
-                    className={`relative z-10 flex h-full flex-col items-center justify-center gap-3 px-4 text-center transition-opacity duration-1000 ease-in-out md:gap-6 md:px-6 ${
-                      isSoundOn ? "opacity-0" : "opacity-100"
-                    }`}
                   >
-                    <div className="rounded-2xl bg-black/20 px-4 py-4 backdrop-blur-md md:px-8 md:py-6 max-w-4xl flex flex-col items-center justify-center">
-                      <p className="text-[10px] uppercase tracking-[0.5em] text-(--color-peach) md:text-xs md:tracking-[0.7em]">
-                        TOLEGEND
-                      </p>
-                      <h1 className="mt-2 text-xl font-semibold text-white md:mt-4 md:text-4xl lg:text-6xl">
-                        {slide.title}
-                      </h1>
-                      <p className="mt-2 max-w-2xl text-sm text-white/80 md:mt-4 md:text-base lg:text-lg text-center w-[100%]">
-                        {slide.caption}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </section>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        <button
-          className="swiper-button-prev-custom fixed left-6 top-1/2 z-50 hidden -translate-y-1/2 md:flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
-          aria-label="Предыдущий слайд"
-          onMouseEnter={() => setIsHoveringLink(true)}
-          onMouseLeave={() => setIsHoveringLink(false)}
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <button
-          className="swiper-button-next-custom fixed right-6 top-1/2 z-50 hidden -translate-y-1/2 md:flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
-          aria-label="Следующий слайд"
-          onMouseEnter={() => setIsHoveringLink(true)}
-          onMouseLeave={() => setIsHoveringLink(false)}
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
+                    {slide.title}
+                  </h1>
+                  <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent transition-opacity duration-700 ease-in-out" style={{ opacity: isHovered ? 0.3 : 0.6 }} />
+                </div>
+              </div>
+            )}
+          </section>
+          );
+        })}
       </div>
       <div
         className="pointer-events-none fixed z-[10000] mix-blend-difference"
@@ -804,52 +761,6 @@ export default function Home() {
           }}
         />
       </div>
-      <button
-        onClick={() => {
-          unlockVideos();
-          setIsSoundOn(!isSoundOn);
-        }}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
-        aria-label={isSoundOn ? "Выключить звук" : "Включить звук"}
-      >
-        {isSoundOn ? (
-          <svg
-            className="h-6 w-6 transition-transform duration-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-            />
-          </svg>
-        ) : (
-          <svg
-            className="h-6 w-6 transition-transform duration-300"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
-            />
-          </svg>
-        )}
-      </button>
 
       {/* Модальное окно галереи */}
       {isGalleryOpen && (
@@ -905,12 +816,17 @@ export default function Home() {
               <div className="mx-auto w-full max-w-7xl">
                 {/* Сетка картинок */}
                 <div
-                  className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                   style={{
                     animation: "galleryGridReveal 1s ease-out 0.2s both",
                   }}
                 >
-                  {galleryImages.map((image, index) => {
+                  {(() => {
+                    let currentImages = photoImages;
+                    if (selectedVideoIndex === 1) currentImages = designImages;
+                    if (selectedVideoIndex === 2) currentImages = productionImages;
+                    return currentImages;
+                  })().map((image, index) => {
                     const animationTypes = [
                       "gallerySlideUp",
                       "gallerySlideRight",
@@ -922,21 +838,94 @@ export default function Home() {
                       animationTypes[index % animationTypes.length];
                     const delay = index * 0.08;
 
+                    // Разные размеры для каждого видео
+                    let rowHeightsMobile: number[];
+                    let rowHeightsTablet: number[];
+                    let rowHeightsDesktop: number[];
+                    let sizeVariants: { colSpan: string; colSpanTablet: string; colSpanDesktop: string }[];
+                    
+                    if (selectedVideoIndex === 0) {
+                      // Фото - более высокие ряды, больше широких картинок
+                      rowHeightsMobile = [10, 12, 14, 11, 13, 10, 14, 12];
+                      rowHeightsTablet = [12, 14, 16, 13, 15, 12, 16, 14];
+                      rowHeightsDesktop = [14, 16, 18, 15, 17, 14, 18, 16];
+                      sizeVariants = [
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                      ];
+                    } else if (selectedVideoIndex === 1) {
+                      // Дизайн - средние ряды, равномерное распределение
+                      rowHeightsMobile = [14, 16, 18, 10, 8, 10, 9, 11];
+                      rowHeightsTablet = [18, 20, 22, 12, 10, 12, 11, 13];
+                      rowHeightsDesktop = [25, 25, 25, 15, 12, 14, 13, 15];
+                      sizeVariants = [
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-3" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                      ];
+                    } else {
+                      // Продакшн - более низкие ряды, больше обычных картинок
+                      rowHeightsMobile = [8, 9, 10, 8, 7, 9, 8, 9, 8, 9];
+                      rowHeightsTablet = [10, 11, 12, 10, 9, 11, 10, 11, 10, 11];
+                      rowHeightsDesktop = [12, 12, 12, 12, 10, 12, 11, 12, 12, 12];
+                      sizeVariants = [
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-1", colSpanDesktop: "lg:col-span-1" },
+                        { colSpan: "col-span-1", colSpanTablet: "sm:col-span-2", colSpanDesktop: "lg:col-span-2" },
+                      ];
+                    }
+                    
+                    const rowIndex = Math.floor(index / 3);
+                    const rowHeightMobile = rowHeightsMobile[rowIndex % rowHeightsMobile.length];
+                    const rowHeightTablet = rowHeightsTablet[rowIndex % rowHeightsTablet.length];
+                    const rowHeightDesktop = rowHeightsDesktop[rowIndex % rowHeightsDesktop.length];
+                    const size = sizeVariants[index % sizeVariants.length];
+
                     return (
                       <div
                         key={image.id}
-                        onClick={() => router.push(`/gallery/${image.id}`)}
-                        className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border border-white/10 bg-black/30 backdrop-blur-sm transition-all duration-700 hover:scale-105 hover:border-(--color-peach) hover:shadow-2xl hover:shadow-(--color-peach)/30"
+                        onClick={() => {
+                          NProgress.start();
+                          router.push(`/gallery/${image.id}`);
+                        }}
+                        className={`group relative ${size.colSpan} ${size.colSpanTablet} ${size.colSpanDesktop} cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm transition-all duration-700 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/50 gallery-image-item`}
+                        data-height-mobile={rowHeightMobile}
+                        data-height-tablet={rowHeightTablet}
+                        data-height-desktop={rowHeightDesktop}
                         style={{
                           animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                           opacity: 0,
                         }}
                       >
-                        <ImageWithPlaceholder
-                          src={image.src}
-                          alt={image.alt}
-                          title={image.title}
-                        />
+                        <div className="absolute inset-0">
+                          <ImageWithPlaceholder
+                            src={image.src}
+                            alt={image.alt}
+                            title={image.title}
+                          />
+                        </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-all duration-500 group-hover:opacity-100" />
                         <div className="absolute bottom-4 left-4 translate-y-4 text-sm font-semibold text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                           #{image.id}
