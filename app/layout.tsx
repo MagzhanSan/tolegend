@@ -52,7 +52,7 @@ const openSans = Open_Sans({
 
 const saira = Saira({
   variable: "--font-saira",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
   display: "swap",

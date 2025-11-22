@@ -1,25 +1,30 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
 
 // Настройка NProgress
-NProgress.configure({
-  showSpinner: false,
-  trickleSpeed: 200,
-  minimum: 0.08,
-});
+if (typeof window !== "undefined") {
+  NProgress.configure({
+    showSpinner: false,
+    trickleSpeed: 200,
+    minimum: 0.08,
+  });
+}
 
 export function NProgressProvider() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    NProgress.done();
-  }, [pathname, searchParams]);
+    if (typeof window !== "undefined") {
+      NProgress.done();
+    }
+  }, [pathname]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const handleLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest("a");
@@ -47,9 +52,13 @@ export function NProgressProvider() {
     history.pushState = function (...args) {
       const result = originalPushState.apply(history, args);
       if (args[2] && typeof args[2] === 'string') {
-        const url = new URL(args[2], window.location.origin);
-        if (url.pathname !== pathname) {
-          NProgress.start();
+        try {
+          const url = new URL(args[2], window.location.origin);
+          if (url.pathname !== pathname) {
+            NProgress.start();
+          }
+        } catch (error) {
+          // Игнорируем ошибки парсинга URL
         }
       }
       return result;

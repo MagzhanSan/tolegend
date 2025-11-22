@@ -148,7 +148,9 @@ export default function GalleryItemPage() {
   useEffect(() => {
     const foundImage = galleryImages.find((img) => img.id === id);
     if (!foundImage) {
-      NProgress.start();
+      if (typeof window !== "undefined") {
+        NProgress.start();
+      }
       router.push("/");
       return;
     }
@@ -221,7 +223,9 @@ export default function GalleryItemPage() {
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
       <button
         onClick={() => {
-          NProgress.start();
+          if (typeof window !== "undefined") {
+            NProgress.start();
+          }
           router.back();
         }}
         onMouseEnter={() => setIsHoveringLink(true)}
