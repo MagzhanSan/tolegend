@@ -1017,7 +1017,9 @@ export default function Home() {
                   playsInline
                   preload="auto"
                 >
+                  {/* WebM первый - приоритет для современных устройств (меньше размер) */}
                   <source src={slide.videoWebm} type="video/webm" />
+                  {/* MP4 fallback только для старых устройств (iOS < 14) */}
                   <source src={slide.videoMp4} type="video/mp4" />
                 </video>
                 <div
