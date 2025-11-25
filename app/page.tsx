@@ -7,17 +7,20 @@ import Image from "next/image";
 
 const slides = [
   {
-    video: "/left.webm",
+    videoWebm: "/left.webm",
+    videoMp4: "/left.mp4",
     title: "Фото",
     isVisibleText: true,
   },
   {
-    video: "/middle.webm",
+    videoWebm: "/middle.webm",
+    videoMp4: "/middle.mp4",
     title: "Видео",
     isVisibleText: true,
   },
   {
-    video: "/right.webm",
+    videoWebm: "/right.webm",
+    videoMp4: "/right.mp4",
     title: "Дизайн",
     isVisibleText: true,
   },
@@ -246,21 +249,45 @@ export default function Home() {
   const [isVideosLoading, setIsVideosLoading] = useState(true);
   const [loadedVideosCount, setLoadedVideosCount] = useState(0);
 
-  // Отслеживание загрузки видео
+  // Отслеживание загрузки видео - ждем первые 5 секунд каждого видео
   useEffect(() => {
+    const TARGET_BUFFER_SECONDS = 2; // Загружаем первые 5 секунд каждого видео
+
     const checkVideosLoaded = () => {
       const totalVideos = slides.length;
       let loaded = 0;
 
-      videoRefs.current.forEach((video) => {
-        if (video && video.readyState >= 3) {
-          // readyState 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA
+      videoRefs.current.forEach((video, index) => {
+        if (!video) return;
+
+        // Проверяем, загружены ли первые 5 секунд видео
+        let hasEnoughBuffer = false;
+
+        if (video.buffered.length > 0) {
+          // Проверяем буфер - должны быть загружены первые 5 секунд
+          const bufferedEnd = video.buffered.end(0);
+          hasEnoughBuffer = bufferedEnd >= TARGET_BUFFER_SECONDS;
+        } else if (video.readyState >= 3) {
+          // Если буфер еще не готов, но видео готово к воспроизведению
+          // Проверяем duration и готовность
+          if (video.duration > 0) {
+            // Если видео короткое (меньше 5 секунд), достаточно readyState >= 3
+            hasEnoughBuffer =
+              video.duration <= TARGET_BUFFER_SECONDS || video.readyState >= 3;
+          } else {
+            // Если duration еще не известен, используем readyState
+            hasEnoughBuffer = video.readyState >= 3;
+          }
+        }
+
+        if (hasEnoughBuffer) {
           loaded++;
         }
       });
 
       setLoadedVideosCount(loaded);
 
+      // Показываем контент когда все видео загрузили первые 5 секунд
       if (loaded >= totalVideos) {
         // Небольшая задержка для плавного перехода
         setTimeout(() => {
@@ -269,27 +296,48 @@ export default function Home() {
       }
     };
 
-    // Проверяем каждые 100мс
+    // Проверяем каждые 100мс для отслеживания прогресса загрузки
     const interval = setInterval(checkVideosLoaded, 100);
 
     // Также слушаем события загрузки
+    const handleProgress = () => {
+      checkVideosLoaded();
+    };
+
     const handleCanPlay = () => {
+      checkVideosLoaded();
+    };
+
+    const handleLoadedData = () => {
+      checkVideosLoaded();
+    };
+
+    const handleTimeUpdate = () => {
       checkVideosLoaded();
     };
 
     videoRefs.current.forEach((video) => {
       if (video) {
+        video.addEventListener("progress", handleProgress);
+        video.addEventListener("canplay", handleCanPlay);
         video.addEventListener("canplaythrough", handleCanPlay);
-        video.addEventListener("loadeddata", handleCanPlay);
+        video.addEventListener("loadeddata", handleLoadedData);
+        video.addEventListener("timeupdate", handleTimeUpdate);
       }
     });
+
+    // Первая проверка сразу
+    checkVideosLoaded();
 
     return () => {
       clearInterval(interval);
       videoRefs.current.forEach((video) => {
         if (video) {
+          video.removeEventListener("progress", handleProgress);
+          video.removeEventListener("canplay", handleCanPlay);
           video.removeEventListener("canplaythrough", handleCanPlay);
-          video.removeEventListener("loadeddata", handleCanPlay);
+          video.removeEventListener("loadeddata", handleLoadedData);
+          video.removeEventListener("timeupdate", handleTimeUpdate);
         }
       });
     };
@@ -323,6 +371,54 @@ export default function Home() {
   }, [isGalleryOpen, isMenuOpen]);
 
   const [userInteracted, setUserInteracted] = useState(false);
+
+  // УЛЬТРА БЫСТРАЯ предзагрузка видео - МАКСИМАЛЬНАЯ оптимизация
+  useEffect(() => {
+    if (typeof document !== "undefined" && slides.length > 0) {
+      // Проверяем поддержку WebM один раз
+      const video = document.createElement("video");
+      const supportsWebM =
+        video.canPlayType('video/webm; codecs="vp8, vorbis"') !== "" ||
+        video.canPlayType('video/webm; codecs="vp9"') !== "";
+
+      // 1. Resource Hints для максимальной скорости подключения
+      if (
+        !document.querySelector(
+          'link[rel="dns-prefetch"][href="' + window.location.origin + '"]'
+        )
+      ) {
+        const dnsPrefetch = document.createElement("link");
+        dnsPrefetch.rel = "dns-prefetch";
+        dnsPrefetch.href = window.location.origin;
+        document.head.appendChild(dnsPrefetch);
+      }
+
+      if (
+        !document.querySelector(
+          'link[rel="preconnect"][href="' + window.location.origin + '"]'
+        )
+      ) {
+        const preconnect = document.createElement("link");
+        preconnect.rel = "preconnect";
+        preconnect.href = window.location.origin;
+        preconnect.crossOrigin = "anonymous";
+        document.head.appendChild(preconnect);
+      }
+
+      // 2. Простая предзагрузка через link preload - БЕЗ конфликтов
+      slides.forEach((slide, index) => {
+        const videoUrl = supportsWebM ? slide.videoWebm : slide.videoMp4;
+
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "video";
+        link.href = videoUrl;
+        // Первое видео с высоким приоритетом, остальные с auto
+        link.fetchPriority = index === 0 ? "high" : "auto";
+        document.head.appendChild(link);
+      });
+    }
+  }, []);
 
   // Предзагрузка изображений галереи в фоне
   useEffect(() => {
@@ -622,14 +718,14 @@ export default function Home() {
             </div>
 
             {/* Прогресс бар */}
-            <div className="w-64 sm:w-80 h-1 bg-white/10 rounded-full overflow-hidden">
+            {/* <div className="w-64 sm:w-80 h-1 bg-white/10 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-(--color-peach) to-(--color-sand) transition-all duration-300 ease-out"
                 style={{
                   width: `${(loadedVideosCount / slides.length) * 100}%`,
                 }}
               />
-            </div>
+            </div> */}
 
             {/* Анимация точек */}
             <div className="flex gap-2">
@@ -915,13 +1011,15 @@ export default function Home() {
                     videoRefs.current[index] = el;
                   }}
                   className="absolute inset-0 h-full w-full object-cover"
-                  src={slide.video}
                   autoPlay
                   loop
                   muted
                   playsInline
                   preload="auto"
-                />
+                >
+                  <source src={slide.videoWebm} type="video/webm" />
+                  <source src={slide.videoMp4} type="video/mp4" />
+                </video>
                 <div
                   className={`absolute inset-0 bg-black transition-opacity duration-700 ease-in-out ${
                     isHovered ? "opacity-0" : "opacity-70"
