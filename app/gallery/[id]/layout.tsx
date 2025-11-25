@@ -50,25 +50,19 @@ export async function generateMetadata({
   const image = galleryImages.find((img) => img.id === id);
   const project = image ? projectInfo[image.folder] : null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tolegend.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tolegend.art";
   const imageUrl = image
     ? `${baseUrl}/projects/${image.folder}/${image.alt}.webp`
     : `${baseUrl}/og-image.jpg`;
 
   return {
-    title: project
-      ? `${project.title} - TOLEGEND`
-      : `Галерея - TOLEGEND`,
+    title: project ? `${project.title} - TOLEGEND` : `Галерея - TOLEGEND`,
     description: project
       ? project.description
       : "Портфолио работ TOLEGEND. Визуальные решения для брендов и проектов.",
     openGraph: {
-      title: project
-        ? `${project.title} - TOLEGEND`
-        : `Галерея - TOLEGEND`,
-      description: project
-        ? project.description
-        : "Портфолио работ TOLEGEND",
+      title: project ? `${project.title} - TOLEGEND` : `Галерея - TOLEGEND`,
+      description: project ? project.description : "Портфолио работ TOLEGEND",
       images: [
         {
           url: imageUrl,
@@ -82,12 +76,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: project
-        ? `${project.title} - TOLEGEND`
-        : `Галерея - TOLEGEND`,
-      description: project
-        ? project.description
-        : "Портфолио работ TOLEGEND",
+      title: project ? `${project.title} - TOLEGEND` : `Галерея - TOLEGEND`,
+      description: project ? project.description : "Портфолио работ TOLEGEND",
       images: [imageUrl],
     },
     alternates: {
@@ -103,4 +93,3 @@ export default function GalleryLayout({
 }) {
   return <>{children}</>;
 }
-

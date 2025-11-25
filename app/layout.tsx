@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Montserrat, Playfair_Display, Cormorant_Garamond, Open_Sans, Saira, Share_Tech } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Inter,
+  Montserrat,
+  Playfair_Display,
+  Cormorant_Garamond,
+  Open_Sans,
+  Saira,
+  Share_Tech,
+} from "next/font/google";
 import "./globals.css";
 import { NProgressProvider } from "./components/NProgress";
 
@@ -97,7 +107,9 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://tolegend.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://tolegend.art"
+  ),
   alternates: {
     canonical: "/",
     languages: {
@@ -147,8 +159,13 @@ export const metadata: Metadata = {
   },
   category: "Creative Agency",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: [
+      { url: "/logo.webp", type: "image/webp" },
+      { url: "/logo.webp", type: "image/webp", sizes: "32x32" },
+      { url: "/logo.webp", type: "image/webp", sizes: "16x16" },
+    ],
+    apple: "/logo.webp",
+    shortcut: "/logo.webp",
   },
   manifest: "/manifest.json",
   other: {
@@ -167,13 +184,13 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    "@id": "https://tolegend.com/#organization",
+    "@id": "https://tolegend.art/#organization",
     name: "TOLEGEND",
     description:
       "Медиа которое работает. Продюсерский центр полного цикла с 10-летним опытом на медиарынке",
-    url: "https://tolegend.com",
-    logo: "https://tolegend.com/logo.webp",
-    image: "https://tolegend.com/og-image.jpg",
+    url: "https://tolegend.art",
+    logo: "https://tolegend.art/logo.webp",
+    image: "https://tolegend.art/og-image.jpg",
     sameAs: [
       "https://www.instagram.com/tolegend.art",
       "https://t.me/tolegend_production",
