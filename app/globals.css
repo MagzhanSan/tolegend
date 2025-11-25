@@ -23,62 +23,8 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-html {
-  cursor: none !important;
-}
-
-html *,
-html *::before,
-html *::after {
-  cursor: none !important;
-}
-
-body {
-  cursor: none !important;
-}
-
 * {
   box-sizing: border-box;
-  cursor: none !important;
-}
-
-a,
-button,
-input,
-textarea,
-select,
-video,
-iframe,
-svg,
-path,
-div,
-span,
-header,
-section,
-article {
-  cursor: none !important;
-}
-
-@keyframes cursorPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-@keyframes cursorRipple {
-  0% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
 }
 
 @keyframes fadeIn {
@@ -189,6 +135,30 @@ article {
   }
 }
 
+@keyframes dividerSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes dividerSlideDown {
+    from {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -265,4 +235,89 @@ article {
 
 .nprogress-custom-parent #nprogress .bar {
   position: absolute;
+}
+
+/* Кастомные скроллбары */
+/* Для WebKit браузеров (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 203, 154, 0.6) 0%,
+    rgba(255, 203, 154, 0.4) 100%
+  );
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 203, 154, 0.8) 0%,
+    rgba(255, 203, 154, 0.6) 100%
+  );
+  border-color: rgba(255, 203, 154, 0.3);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 203, 154, 1) 0%,
+    rgba(255, 203, 154, 0.8) 100%
+  );
+}
+
+/* Горизонтальный скроллбар */
+::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+/* Для Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 203, 154, 0.6) rgba(0, 0, 0, 0.1);
+}
+
+/* Специальные стили для галереи */
+.gallery-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 203, 154, 0.6) rgba(0, 0, 0, 0.1);
+}
+
+.gallery-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.gallery-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.gallery-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 203, 154, 0.7) 0%,
+    rgba(255, 203, 154, 0.5) 100%
+  );
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.gallery-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 203, 154, 0.9) 0%,
+    rgba(255, 203, 154, 0.7) 100%
+  );
 }
