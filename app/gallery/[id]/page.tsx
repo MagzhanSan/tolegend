@@ -156,11 +156,15 @@ function ImageWithPlaceholder({
   alt,
   title,
   className,
+  priority = false,
+  quality = 90,
 }: {
   src: string;
   alt: string;
   title: string;
   className?: string;
+  priority?: boolean;
+  quality?: number;
 }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -181,8 +185,9 @@ function ImageWithPlaceholder({
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className={`object-cover opacity-100 transition-opacity duration-500 ${className}`}
-          loading="eager"
-          quality={100}
+          loading={priority ? "eager" : "lazy"}
+          quality={quality}
+          priority={priority}
           unoptimized={false}
         />
       ) : null}
@@ -231,6 +236,29 @@ export default function GalleryItemPage() {
       return;
     }
     setImage(foundImage);
+
+    // Предзагрузка всех изображений из того же проекта для быстрой навигации
+    const projectImages = galleryImages.filter(
+      (img) => img.folder === foundImage.folder
+    );
+
+    // Предзагружаем изображения проекта в фоне
+    projectImages.forEach((projectImage, index) => {
+      setTimeout(() => {
+        // Предзагружаем через link preload для лучшей производительности
+        if (typeof document !== "undefined") {
+          const link = document.createElement("link");
+          link.rel = "preload";
+          link.as = "image";
+          link.href = projectImage.src;
+          link.fetchPriority = index === 0 ? "high" : "low";
+          document.head.appendChild(link);
+        }
+        // Также предзагружаем через Image для кэширования
+        const img = new window.Image();
+        img.src = projectImage.src;
+      }, index * 30); // 30мс между каждым изображением
+    });
   }, [id, router]);
 
   // Преобразование вертикального скролла в горизонтальный для галереи
@@ -319,6 +347,8 @@ export default function GalleryItemPage() {
               src={image.src}
               alt={image.alt}
               title={project?.title || image.alt}
+              priority={true}
+              quality={100}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           </div>

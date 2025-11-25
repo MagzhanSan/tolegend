@@ -173,10 +173,12 @@ function ImageWithPlaceholder({
   src,
   alt,
   title,
+  priority = false,
 }: {
   src: string;
   alt: string;
   title: string;
+  priority?: boolean;
 }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -196,9 +198,9 @@ function ImageWithPlaceholder({
               ? "opacity-100 group-hover:scale-110 group-hover:brightness-110"
               : "opacity-0"
           }`}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
           unoptimized={false}
-          priority={false}
+          priority={priority}
         />
       ) : null}
       {imageError || !imageLoaded ? (
@@ -321,6 +323,37 @@ export default function Home() {
   }, [isGalleryOpen, isMenuOpen]);
 
   const [userInteracted, setUserInteracted] = useState(false);
+
+  // Предзагрузка изображений галереи в фоне
+  useEffect(() => {
+    // Ждем загрузки основных элементов страницы
+    const preloadImages = () => {
+      // Предзагружаем изображения постепенно, чтобы не перегружать браузер
+      galleryImages.forEach((image, index) => {
+        // Задержка для каждого изображения, чтобы не блокировать основной контент
+        setTimeout(() => {
+          const img = new window.Image();
+          img.src = image.src;
+          // Предзагружаем через link preload для лучшей производительности
+          if (typeof document !== "undefined") {
+            const link = document.createElement("link");
+            link.rel = "preload";
+            link.as = "image";
+            link.href = image.src;
+            link.fetchPriority = index < 12 ? "high" : "low"; // Первые 12 с высоким приоритетом
+            document.head.appendChild(link);
+          }
+        }, index * 50); // 50мс между каждым изображением
+      });
+    };
+
+    // Начинаем предзагрузку после небольшой задержки, чтобы не мешать основной загрузке
+    const timer = setTimeout(preloadImages, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   // Определение мобильного устройства
   useEffect(() => {
@@ -1044,6 +1077,7 @@ export default function Home() {
                           src={image.src}
                           alt={image.alt}
                           title={image.alt}
+                          priority={index < 6} // Первые 6 изображений с высоким приоритетом
                         />
                       </div>
                       {/* Затемнение только на десктопе, на мобильных скрыто */}
