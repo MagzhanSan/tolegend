@@ -3,6 +3,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import NProgress from "nprogress";
+import Image from "next/image";
 
 // Информация о проектах
 const projectInfo: Record<string, { title: string; description: string }> = {
@@ -165,20 +166,24 @@ function ImageWithPlaceholder({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    const img = new Image();
-    img.src = src;
-    img.onload = () => setImageLoaded(true);
-    img.onerror = () => setImageError(true);
+    const imgElement = document.createElement("img");
+    imgElement.src = src;
+    imgElement.onload = () => setImageLoaded(true);
+    imgElement.onerror = () => setImageError(true);
   }, [src]);
 
   return (
     <div className={`relative h-full w-full`}>
       {!imageError && imageLoaded ? (
-        <img
+        <Image
           src={src}
           alt={alt}
-          className={`h-full w-full object-cover opacity-100 transition-opacity duration-500 ${className}`}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className={`object-cover opacity-100 transition-opacity duration-500 ${className}`}
           loading="eager"
+          quality={100}
+          unoptimized={false}
         />
       ) : null}
       {imageError || !imageLoaded ? (
@@ -305,7 +310,7 @@ export default function GalleryItemPage() {
           }}
         >
           <div
-            className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 bg-black/30 backdrop-blur-sm"
+            className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 bg-black/30 backdrop-blur-sm h-[600px]"
             style={{
               animation: "galleryScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}

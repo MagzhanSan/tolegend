@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import NProgress from "nprogress";
+import Image from "next/image";
 
 const slides = [
   {
@@ -183,17 +184,21 @@ function ImageWithPlaceholder({
   return (
     <div className="relative h-full w-full">
       {!imageError ? (
-        <img
+        <Image
           src={src}
           alt={alt}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           onError={() => setImageError(true)}
           onLoad={() => setImageLoaded(true)}
-          className={`h-full w-full object-cover transition-all duration-700 ${
+          className={`object-cover transition-all duration-700 ${
             imageLoaded
               ? "opacity-100 group-hover:scale-110 group-hover:brightness-110"
               : "opacity-0"
           }`}
           loading="lazy"
+          unoptimized={false}
+          priority={false}
         />
       ) : null}
       {imageError || !imageLoaded ? (
@@ -236,6 +241,57 @@ export default function Home() {
     number | null
   >(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVideosLoading, setIsVideosLoading] = useState(true);
+  const [loadedVideosCount, setLoadedVideosCount] = useState(0);
+
+  // Отслеживание загрузки видео
+  useEffect(() => {
+    const checkVideosLoaded = () => {
+      const totalVideos = slides.length;
+      let loaded = 0;
+
+      videoRefs.current.forEach((video) => {
+        if (video && video.readyState >= 3) {
+          // readyState 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA
+          loaded++;
+        }
+      });
+
+      setLoadedVideosCount(loaded);
+
+      if (loaded >= totalVideos) {
+        // Небольшая задержка для плавного перехода
+        setTimeout(() => {
+          setIsVideosLoading(false);
+        }, 300);
+      }
+    };
+
+    // Проверяем каждые 100мс
+    const interval = setInterval(checkVideosLoaded, 100);
+
+    // Также слушаем события загрузки
+    const handleCanPlay = () => {
+      checkVideosLoaded();
+    };
+
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.addEventListener("canplaythrough", handleCanPlay);
+        video.addEventListener("loadeddata", handleCanPlay);
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      videoRefs.current.forEach((video) => {
+        if (video) {
+          video.removeEventListener("canplaythrough", handleCanPlay);
+          video.removeEventListener("loadeddata", handleCanPlay);
+        }
+      });
+    };
+  }, []);
 
   useEffect(() => {
     if (isGalleryOpen || isMenuOpen) {
@@ -519,6 +575,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
+      {/* Глобальный лоадер для видео */}
+      {isVideosLoading && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-(--color-deep-forest) transition-opacity duration-500">
+          <div className="flex flex-col items-center gap-6">
+            {/* Логотип */}
+            <div className="relative">
+              <img
+                src="/logo.webp"
+                alt="TOLEGEND"
+                className="h-16 w-auto sm:h-20 opacity-80"
+              />
+            </div>
+
+            {/* Прогресс бар */}
+            <div className="w-64 sm:w-80 h-1 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-(--color-peach) to-(--color-sand) transition-all duration-300 ease-out"
+                style={{
+                  width: `${(loadedVideosCount / slides.length) * 100}%`,
+                }}
+              />
+            </div>
+
+            {/* Анимация точек */}
+            <div className="flex gap-2">
+              <div
+                className="w-2 h-2 rounded-full bg-(--color-peach) animate-pulse"
+                style={{ animationDelay: "0s" }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-(--color-peach) animate-pulse"
+                style={{ animationDelay: "0.2s" }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-(--color-peach) animate-pulse"
+                style={{ animationDelay: "0.4s" }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <header
         className="fixed top-0 left-0 right-0 z-50 mx-auto w-full max-w-7xl px-3 py-3 sm:px-6 sm:py-6 border-b border-white/10"
         onClick={(e) => {
