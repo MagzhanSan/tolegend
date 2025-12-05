@@ -215,7 +215,6 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        {/* Resource Hints для максимальной скорости загрузки */}
         <link rel="dns-prefetch" href="/" />
         <link rel="preconnect" href="/" crossOrigin="anonymous" />
         <script

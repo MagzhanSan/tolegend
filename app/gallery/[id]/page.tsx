@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from "react";
 import NProgress from "nprogress";
 import Image from "next/image";
 
-// Информация о проектах
 const projectInfo: Record<string, { title: string; description: string }> = {
   "god-rabochih-profesii": {
     title: "Год рабочих профессий",
@@ -24,9 +23,7 @@ const projectInfo: Record<string, { title: string; description: string }> = {
   },
 };
 
-// Единый массив всех изображений
 const galleryImages = [
-  // god-rabochih-profesii
   {
     id: 1,
     src: "/projects/god-rabochih-profesii/Айбек Таңатаров.webp",
@@ -117,7 +114,6 @@ const galleryImages = [
     alt: "Шаханова Алмагуль",
     folder: "god-rabochih-profesii",
   },
-  // jetisu
   {
     id: 16,
     src: "/projects/jetisu/banner.webp",
@@ -136,7 +132,6 @@ const galleryImages = [
     alt: "Jetisu Seat",
     folder: "jetisu",
   },
-  // regbi
   {
     id: 19,
     src: "/projects/regbi/ball.webp",
@@ -237,15 +232,12 @@ export default function GalleryItemPage() {
     }
     setImage(foundImage);
 
-    // Предзагрузка всех изображений из того же проекта для быстрой навигации
     const projectImages = galleryImages.filter(
       (img) => img.folder === foundImage.folder
     );
 
-    // Предзагружаем изображения проекта в фоне
     projectImages.forEach((projectImage, index) => {
       setTimeout(() => {
-        // Предзагружаем через link preload для лучшей производительности
         if (typeof document !== "undefined") {
           const link = document.createElement("link");
           link.rel = "preload";
@@ -254,22 +246,18 @@ export default function GalleryItemPage() {
           link.fetchPriority = index === 0 ? "high" : "low";
           document.head.appendChild(link);
         }
-        // Также предзагружаем через Image для кэширования
         const img = new window.Image();
         img.src = projectImage.src;
-      }, index * 30); // 30мс между каждым изображением
+      }, index * 30);
     });
   }, [id, router]);
 
-  // Преобразование вертикального скролла в горизонтальный для галереи
   useEffect(() => {
     const galleryElement = galleryScrollRef.current;
     if (!galleryElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      // Только на десктопе, где есть горизонтальный скролл
       if (window.innerWidth >= 768) {
-        // Проверяем, что курсор находится над галереей
         const rect = galleryElement.getBoundingClientRect();
         const isOverGallery =
           e.clientX >= rect.left &&
@@ -278,9 +266,7 @@ export default function GalleryItemPage() {
           e.clientY <= rect.bottom;
 
         if (isOverGallery && e.deltaY !== 0) {
-          // Предотвращаем стандартный вертикальный скролл
           e.preventDefault();
-          // Преобразуем вертикальный скролл в горизонтальный
           galleryElement.scrollLeft += e.deltaY;
         }
       }
@@ -370,7 +356,6 @@ export default function GalleryItemPage() {
             </div>
           )}
 
-          {/* Галерея картинок из того же проекта */}
         </div>
         {(() => {
           const projectImages = galleryImages.filter(
@@ -388,7 +373,6 @@ export default function GalleryItemPage() {
                 animation: "galleryFade 0.8s ease-out 0.4s both",
               }}
             >
-              {/* Десктопная версия - горизонтальный скролл с колонками */}
               <div
                 className={`hidden md:block w-full ${shouldCenter ? "" : ""}`}
               >
@@ -410,11 +394,8 @@ export default function GalleryItemPage() {
                     style={shouldCenter ? {} : { maxWidth: "100%" }}
                   >
                     {(() => {
-                      // Специальная обработка для 1-2 картинок
                       if (projectImages.length === 1) {
                         const image = projectImages[0];
-                        // Специальная обработка для картинки "Шаханова Алмагуль" (id: 15)
-                        const isShahanova = image.id === 15;
                         const animationTypes = [
                           "gallerySlideUp",
                           "gallerySlideRight",
@@ -434,9 +415,7 @@ export default function GalleryItemPage() {
                               }
                               router.push(`/gallery/${image.id}`);
                             }}
-                            className={`group relative ${
-                              isShahanova ? "w-full" : "w-[800px]"
-                            } h-full cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                            className="group relative w-[800px] h-full cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
                             style={{
                               animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                               opacity: 0,
@@ -458,8 +437,6 @@ export default function GalleryItemPage() {
                         return (
                           <>
                             {projectImages.map((image, index) => {
-                              // Специальная обработка для картинки "Шаханова Алмагуль" (id: 15)
-                              const isShahanova = image.id === 15;
                               const animationTypes = [
                                 "gallerySlideUp",
                                 "gallerySlideRight",
@@ -480,9 +457,7 @@ export default function GalleryItemPage() {
                                     }
                                     router.push(`/gallery/${image.id}`);
                                   }}
-                                  className={`group relative ${
-                                    isShahanova ? "w-full" : "w-[600px]"
-                                  } h-full cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                                  className="group relative w-[600px] h-full cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
                                   style={{
                                     animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                                     opacity: 0,
@@ -503,14 +478,12 @@ export default function GalleryItemPage() {
                         );
                       }
 
-                      // Разные размеры для галереи
-                      // Высоты для обычных картинок и больших (в 2 раза больше)
                       const rowHeightsDesktop = [
                         14, 16, 18, 15, 17, 14, 18, 16,
                       ];
                       const rowHeightsDesktopLarge = [
                         28, 32, 36, 30, 34, 28, 36, 32,
-                      ]; // В 2 раза больше
+                      ];
                       const sizeVariants = [
                         {
                           width: "w-32",
@@ -519,9 +492,9 @@ export default function GalleryItemPage() {
                           isLarge: false,
                         },
                         {
-                          width: "w-64", // В 2 раза больше (было w-32)
-                          widthTablet: "sm:w-80", // В 2 раза больше (было sm:w-40)
-                          widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-[648px]",
                           isLarge: true,
                         },
                         {
@@ -537,9 +510,9 @@ export default function GalleryItemPage() {
                           isLarge: false,
                         },
                         {
-                          width: "w-96", // В 2 раза больше (было w-48)
-                          widthTablet: "sm:w-[512px]", // В 2 раза больше (было sm:w-64 = 256px)
-                          widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
+                          width: "w-96",
+                          widthTablet: "sm:w-[512px]",
+                          widthDesktop: "lg:w-[648px]",
                           isLarge: true,
                         },
                         {
@@ -567,18 +540,13 @@ export default function GalleryItemPage() {
                           isLarge: false,
                         },
                         {
-                          width: "w-64", // В 2 раза больше (было w-32)
-                          widthTablet: "sm:w-80", // В 2 раза больше (было sm:w-40)
-                          widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-[648px]",
                           isLarge: true,
                         },
                       ];
 
-                      // Распределяем картинки по колонкам
-                      // Если в колонке есть большая картинка:
-                      //   - Вариант 1: сверху 2 маленькие горизонтально, внизу 1 большая
-                      //   - Вариант 2: сверху 1 большая, внизу 2 маленькие горизонтально
-                      // Иначе: 3 картинки вертикально
                       const columns: Array<{
                         items: Array<{
                           image: (typeof projectImages)[0];
@@ -586,12 +554,11 @@ export default function GalleryItemPage() {
                           rowIndex: number;
                         }>;
                         hasLargeImage: boolean;
-                        largeImageOnTop: boolean; // true = большая сверху, false = большая снизу
+                        largeImageOnTop: boolean;
                       }> = [];
 
                       let i = 0;
                       while (i < projectImages.length) {
-                        // Проверяем, есть ли большая картинка в следующих 3 картинках
                         let hasLargeImage = false;
                         let largeImageIndex = -1;
                         for (
@@ -616,10 +583,7 @@ export default function GalleryItemPage() {
                         }> = [];
 
                         if (hasLargeImage) {
-                          // Колонка с большой картинкой: чередуем варианты
-                          // Вариант 1: 2 маленькие сверху + 1 большая внизу
-                          // Вариант 2: 1 большая сверху + 2 маленькие внизу
-                          const largeImageOnTop = columns.length % 2 === 0; // Чередуем варианты
+                          const largeImageOnTop = columns.length % 2 === 0;
 
                           const smallImages: Array<{
                             image: (typeof projectImages)[0];
@@ -630,7 +594,6 @@ export default function GalleryItemPage() {
                             index: number;
                           } | null = null;
 
-                          // Собираем картинки из следующих 3 позиций
                           for (
                             let j = 0;
                             j < 3 && i + j < projectImages.length;
@@ -653,7 +616,6 @@ export default function GalleryItemPage() {
                             }
                           }
 
-                          // Если не хватает маленьких, берем из следующих позиций
                           let nextIndex = i + 3;
                           while (
                             smallImages.length < 2 &&
@@ -672,32 +634,30 @@ export default function GalleryItemPage() {
 
                           if (largeImage) {
                             if (largeImageOnTop) {
-                              // Вариант 2: большая сверху, маленькие внизу
                               column.push({
                                 image: largeImage.image,
                                 index: largeImage.index,
-                                rowIndex: 0, // Верхний ряд
+                                rowIndex: 0,
                               });
                               smallImages.forEach((item) => {
                                 column.push({
                                   image: item.image,
                                   index: item.index,
-                                  rowIndex: 1, // Нижний ряд
+                                  rowIndex: 1,
                                 });
                               });
                             } else {
-                              // Вариант 1: маленькие сверху, большая внизу
                               smallImages.forEach((item) => {
                                 column.push({
                                   image: item.image,
                                   index: item.index,
-                                  rowIndex: 0, // Верхний ряд
+                                  rowIndex: 0,
                                 });
                               });
                               column.push({
                                 image: largeImage.image,
                                 index: largeImage.index,
-                                rowIndex: 1, // Нижний ряд
+                                rowIndex: 1,
                               });
                             }
                           }
@@ -710,7 +670,6 @@ export default function GalleryItemPage() {
                           });
                           continue;
                         } else {
-                          // Обычная колонка: 3 картинки вертикально
                           for (
                             let j = 0;
                             j < 3 && i + j < projectImages.length;
@@ -734,7 +693,6 @@ export default function GalleryItemPage() {
 
                       return columns.map((column, columnIndex) => {
                         if (column.hasLargeImage) {
-                          // Колонка с большой картинкой: поддерживаем оба варианта
                           const topRowItems = column.items.filter(
                             (item) => item.rowIndex === 0
                           );
@@ -742,33 +700,30 @@ export default function GalleryItemPage() {
                             (item) => item.rowIndex === 1
                           );
 
-                          // Определяем, где большая картинка
                           const topRowHasLarge = topRowItems.some((item) => {
                             const size =
                               sizeVariants[item.index % sizeVariants.length];
                             return size.isLarge;
                           });
 
-                          // Вычисляем высоты
                           const topRowHeight = topRowHasLarge
-                            ? rowHeightsDesktopLarge[0] || 28 // Большая сверху
+                            ? rowHeightsDesktopLarge[0] || 28
                             : topRowItems.length > 0
                             ? rowHeightsDesktop[0] || 14
-                            : 0; // Маленькие сверху
+                            : 0;
                           const bottomRowHeight = topRowHasLarge
                             ? bottomRowItems.length > 0
                               ? rowHeightsDesktop[0] || 14
-                              : 0 // Маленькие внизу
+                              : 0
                             : bottomRowItems.length > 0
                             ? rowHeightsDesktopLarge[1] || 28
-                            : 0; // Большая внизу
+                            : 0;
                           const totalHeight = topRowHeight + bottomRowHeight;
                           const topRowHeightPercent =
                             (topRowHeight / totalHeight) * 100;
                           const bottomRowHeightPercent =
                             (bottomRowHeight / totalHeight) * 100;
 
-                          // Функция для рендеринга картинки
                           const renderImage = (
                             item: {
                               image: (typeof projectImages)[0];
@@ -780,9 +735,6 @@ export default function GalleryItemPage() {
                             const { image, index } = item;
                             const size =
                               sizeVariants[index % sizeVariants.length];
-
-                            // Специальная обработка для картинки "Шаханова Алмагуль" (id: 15)
-                            const isShahanova = image.id === 15;
 
                             const animationTypes = [
                               "gallerySlideUp",
@@ -805,16 +757,10 @@ export default function GalleryItemPage() {
                                   router.push(`/gallery/${image.id}`);
                                 }}
                                 className={`group relative ${
-                                  isRow && !isShahanova ? "flex-1" : ""
-                                } ${
-                                  isShahanova
-                                    ? "w-full"
-                                    : `${size.width} ${size.widthTablet} ${size.widthDesktop}`
-                                } cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                                  isRow ? "flex-1" : ""
+                                } ${size.width} ${size.widthTablet} ${size.widthDesktop} cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
                                 style={{
-                                  height: isShahanova
-                                    ? "100%"
-                                    : isRow
+                                  height: isRow
                                     ? "100%"
                                     : `calc(${heightPercent}% - 0.5rem)`,
                                   flexShrink: 0,
@@ -839,14 +785,11 @@ export default function GalleryItemPage() {
                               key={columnIndex}
                               className="flex flex-col gap-2 shrink-0 h-full"
                             >
-                              {/* Верхний ряд */}
                               {topRowHasLarge ? (
-                                // Вариант 2: большая картинка сверху
                                 topRowItems.map((item) =>
                                   renderImage(item, topRowHeightPercent, false)
                                 )
                               ) : (
-                                // Вариант 1: 2 маленькие картинки сверху горизонтально
                                 <div
                                   className="flex gap-2 shrink-0"
                                   style={{
@@ -859,9 +802,7 @@ export default function GalleryItemPage() {
                                 </div>
                               )}
 
-                              {/* Нижний ряд */}
                               {topRowHasLarge ? (
-                                // Вариант 2: 2 маленькие картинки внизу горизонтально
                                 <div
                                   className="flex gap-2 shrink-0"
                                   style={{
@@ -873,7 +814,6 @@ export default function GalleryItemPage() {
                                   )}
                                 </div>
                               ) : (
-                                // Вариант 1: большая картинка внизу
                                 bottomRowItems.map((item) =>
                                   renderImage(
                                     item,
@@ -885,7 +825,6 @@ export default function GalleryItemPage() {
                             </div>
                           );
                         } else {
-                          // Обычная колонка: 3 картинки вертикально
                           const rowHeights = column.items.map((item) => {
                             const rowIndex = item.rowIndex;
                             const size =
@@ -917,9 +856,6 @@ export default function GalleryItemPage() {
                                 const heightPercentage =
                                   heightPercentages[itemIndex];
 
-                                // Специальная обработка для картинки "Шаханова Алмагуль" (id: 15)
-                                const isShahanova = image.id === 15;
-
                                 const animationTypes = [
                                   "gallerySlideUp",
                                   "gallerySlideRight",
@@ -940,15 +876,9 @@ export default function GalleryItemPage() {
                                       }
                                       router.push(`/gallery/${image.id}`);
                                     }}
-                                    className={`group relative ${
-                                      isShahanova
-                                        ? "w-[700px]"
-                                        : `${size.width} ${size.widthTablet} ${size.widthDesktop}`
-                                    } cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                                    className={`group relative ${size.width} ${size.widthTablet} ${size.widthDesktop} cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
                                     style={{
-                                      height: isShahanova
-                                        ? "100%"
-                                        : `calc(${heightPercentage}% - 0.5rem)`,
+                                      height: `calc(${heightPercentage}% - 0.5rem)`,
                                       flexShrink: 0,
                                       animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                                       opacity: 0,
@@ -974,7 +904,6 @@ export default function GalleryItemPage() {
                 </div>
               </div>
 
-              {/* Мобильная версия - вертикальный скролл, одинаковый размер */}
               <div className="md:hidden grid grid-cols-1 gap-4">
                 {projectImages.map((projectImage, index) => {
                   const animationTypes = [
@@ -1010,7 +939,6 @@ export default function GalleryItemPage() {
                           title={projectImage.alt}
                         />
                       </div>
-                      {/* Затемнение только на десктопе, на мобильных скрыто */}
                       <div className="hidden md:block absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
                     </div>
                   );

@@ -3,7 +3,6 @@ import { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tolegend.art";
 
-  // Статические страницы
   const routes = [
     {
       url: baseUrl,
@@ -13,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Все изображения галереи (1-20)
   const galleryImages = Array.from({ length: 20 }, (_, i) => i + 1);
 
   const galleryRoutes = galleryImages.map((id) => ({

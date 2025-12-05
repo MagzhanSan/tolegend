@@ -2,23 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Изображения уже в WebP - используем только WebP формат
     formats: ["image/webp"],
-    // Размеры для разных устройств
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Долгое кэширование для быстрой загрузки
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 год кэширования
-    // Разрешаем загрузку из public папки
+    minimumCacheTTL: 60 * 60 * 24 * 365,
     domains: [],
     remotePatterns: [],
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Оптимизация для Vercel
   compress: true,
   poweredByHeader: false,
-  // Headers для кэширования статических файлов
   async headers() {
     return [
       {

@@ -7,26 +7,22 @@ import Image from "next/image";
 
 const slides = [
   {
-    videoWebm: "/left.webm",
-    videoMp4: "/left.mp4",
-    title: "Фото",
-    isVisibleText: true,
-  },
-  {
-    videoWebm: "/middle.webm",
-    videoMp4: "/middle.mp4",
-    title: "Видео",
-    isVisibleText: true,
-  },
-  {
-    videoWebm: "/right.webm",
-    videoMp4: "/right.mp4",
+    videoMp4: "/new-content/design/left.mp4",
     title: "Дизайн",
+    isVisibleText: true,
+  },
+  {
+    videoMp4: "/middle.mp4",
+    title: "Продакшн",
+    isVisibleText: true,
+  },
+  {
+    videoMp4: "/new-content/events/right.mp4",
+    title: "Мероприятия",
     isVisibleText: true,
   },
 ];
 
-// Информация о проектах
 const projectInfo: Record<string, { title: string; description: string }> = {
   "god-rabochih-profesii": {
     title: "Год рабочих профессий",
@@ -45,9 +41,209 @@ const projectInfo: Record<string, { title: string; description: string }> = {
   },
 };
 
-// Единый массив всех изображений
+// Новые изображения для раздела Дизайн
+const designMainGallery = [
+  {
+    id: "design-god-rab-prof",
+    src: "/new-content/design/Главная галерея/Год раб проф.webp",
+    alt: "Год рабочих профессий",
+    childFolder: "Год рабочих профессий",
+    title: "Год рабочих профессий",
+    description:
+      "Мы разработали визуальные и коммуникационные материалы для проекта «Год рабочих профессий». Подготовили макеты для соцсетей, наружной рекламы и официальных носителей. Проект направлен на повышение престижа рабочих специальностей и уважения к труду.",
+  },
+  {
+    id: "design-zhetisu",
+    src: "/new-content/design/Главная галерея/Жетысу.webp",
+    alt: "Жетысу",
+    childFolder: "Жетысу",
+    title: "Жетысу",
+    description:
+      "Мы создали фирменный стиль региона: логотип, паттерны и фирменную палитру. Новый визуальный язык сделал Жетысу узнаваемым брендом, основанным на природе и культуре Семиречья!",
+  },
+  {
+    id: "design-zakon-poryadok",
+    src: "/new-content/design/Главная галерея/Закон и порядок.webp",
+    alt: "Закон и порядок",
+    childFolder: "Закон и порядок",
+    title: "Закон и Порядок",
+    description:
+      "Мы разработали визуальную коммуникацию для проекта, направленного на формирование культуры правосознания и укрепление гражданской ответственности. Подготовили серию образовательных материалов, инфографику и медиа-контент, которые объясняют важные правовые нормы простым и понятным языком. Проект способствует повышению доверия к государственным институтам и формирует уважение к закону.",
+  },
+  {
+    id: "design-zakon-poryadok-chb",
+    src: "/new-content/design/Главная галерея/Закон и порядок ЧБ.webp",
+    alt: "Закон и порядок ЧБ",
+    childFolder: "Закон и порядок",
+    title: "Закон и Порядок",
+    description:
+      "Мы разработали визуальную коммуникацию для проекта, направленного на формирование культуры правосознания и укрепление гражданской ответственности. Подготовили серию образовательных материалов, инфографику и медиа-контент, которые объясняют важные правовые нормы простым и понятным языком. Проект способствует повышению доверия к государственным институтам и формирует уважение к закону.",
+  },
+  {
+    id: "design-regbi",
+    src: "/new-content/design/Главная галерея/Регби_.webp",
+    alt: "Регби",
+    childFolder: "Регби",
+    title: "Казахстан Регби",
+    description:
+      "Мы провели полный ребрендинг национальной федерации: новый логотип, фирменные цвета и айдентика для формы, мерча и медиа. Федерация получила современный образ, адаптированный под международные площадки.",
+  },
+];
+
+// Дочерние изображения для каждого проекта
+const designChildGalleries: Record<string, string[]> = {
+  "Год рабочих профессий": [
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/автобус грп.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/билборд 2 грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/билборд грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/кепки грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/остановки грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/флаги грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/футболки грп доч.webp",
+    "/new-content/design/Дочерняя галерея /Год рабочих профессий/худи грп доч.webp",
+  ],
+  Жетысу: [
+    "/new-content/design/Дочерняя галерея /Жетысу/билборд жетысу доч.webp",
+    "/new-content/design/Дочерняя галерея /Жетысу/одежда жетысу доч.webp",
+    "/new-content/design/Дочерняя галерея /Жетысу/скамейка жетысу доч.webp",
+    "/new-content/design/Дочерняя галерея /Жетысу/флаг жетысу доч.webp",
+  ],
+  "Закон и порядок": [
+    "/new-content/design/Дочерняя галерея /Закон и порядок/автобус зип.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/билборд зип доч.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/кепки зип.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/остановки закон доч.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/пресс стена зип.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/стаканы зип.webp",
+    "/new-content/design/Дочерняя галерея /Закон и порядок/худи зип.webp",
+  ],
+  Регби: [
+    "/new-content/design/Дочерняя галерея /Регби/5d047ed408a7b02ff188174ebbdf79935d9cfad1 (3).webp",
+    "/new-content/design/Дочерняя галерея /Регби/9b16e58f2c1adca41995f7a0a24402ec98f1d9c5.webp",
+    "/new-content/design/Дочерняя галерея /Регби/автобус.webp",
+    "/new-content/design/Дочерняя галерея /Регби/баннер.webp",
+    "/new-content/design/Дочерняя галерея /Регби/диплом.webp",
+    "/new-content/design/Дочерняя галерея /Регби/мяч.webp",
+    "/new-content/design/Дочерняя галерея /Регби/папка.webp",
+    "/new-content/design/Дочерняя галерея /Регби/пресс стена.webp",
+    "/new-content/design/Дочерняя галерея /Регби/Регби.webp",
+  ],
+};
+
+// Новые изображения для раздела Мероприятия (Events)
+const eventsMainGallery = [
+  {
+    id: "events-ne-yo",
+    src: "/new-content/events/Фотки/Ne Yo/Ne Yo главная.webp",
+    alt: "Ne Yo",
+    childFolder: "Ne Yo",
+    title: "Ne-Yo — Gentleman Tour (Astana Arena, 2010)",
+    description:
+      "Мы обеспечили организацию и полное техническое сопровождение международного концерта Ne-Yo в рамках Gentleman Tour. Координировали команды, работу площадки, оборудование и все процессы на арене. Наше участие позволило провести шоу мирового уровня в Астане с точной логистикой, стабильной технической поддержкой и безупречной организацией.",
+  },
+  {
+    id: "events-aziada",
+    src: "/new-content/events/Фотки/Азиада/Азиада главная.webp",
+    alt: "Азиада",
+    childFolder: "Азиада",
+    title: "Азиада 2011 — Церемония открытия (Astana Arena)",
+    description:
+      "Наш креативный директор выступил режиссёром церемонии открытия VII Зимних Азиатских игр. Мы участвовали в организации масштабного международного шоу: синхронизировали свет, экраны, декорации и постановочные элементы. Проект стал знаковым событием, который смотрели миллионы зрителей.",
+  },
+  {
+    id: "events-bezrukov",
+    src: "/new-content/events/Фотки/Безруков/Безруков главнаяя.webp",
+    alt: "Безруков",
+    childFolder: "Безруков",
+    title: "Сергей Безруков — Театральный тур «Сирано де Бержерак»",
+    description:
+      "В 2013 году в Астане мы обеспечили организацию и полное сопровождение театрального тура Сергея Безрукова. От технического обеспечения до координации команд — всё было выстроено так, чтобы спектакль прошёл безупречно и сохранил художественную цельность.",
+  },
+  {
+    id: "events-nish",
+    src: "/new-content/events/Фотки/НИШ/НИШ главная.webp",
+    alt: "НИШ",
+    childFolder: "НИШ",
+    title: "Сценография и экстерьер для NIS",
+    description:
+      "Мы разработали сценографию и экстерьер для мероприятий Назарбаев Интеллектуальных Школ (NIS). Проработали визуальный стиль, сценические конструкции, оформление входных зон и наружные элементы, создали световые решения и композицию пространства.",
+  },
+  {
+    id: "events-nur-otan",
+    src: "/new-content/events/Фотки/Нур Отан/НурОтан главная.webp",
+    alt: "Нур Отан",
+    childFolder: "Нур Отан",
+    title: "Сценография для Nur Otan",
+    description:
+      "Для партии Nur Otan мы подготовили комплексную сценографию официальных мероприятий: сценические элементы, свет, экранную графику и визуальное оформление пространства. Наши решения усилили коммуникацию и сделали мероприятия выразительными и визуально цельными.",
+  },
+];
+
+// Дочерние изображения для каждого мероприятия
+const eventsChildGalleries: Record<string, string[]> = {
+  "Ne Yo": [
+    "/new-content/events/Фотки/Ne Yo/Ne Yo дочерняя_.webp",
+    "/new-content/events/Фотки/Ne Yo/Ne Yo дочка.webp",
+    "/new-content/events/Фотки/Ne Yo/Нио дочка 5.webp",
+    "/new-content/events/Фотки/Ne Yo/Нио дочка.webp",
+  ],
+  Азиада: [
+    "/new-content/events/Фотки/Азиада/Азиада1.webp",
+    "/new-content/events/Фотки/Азиада/Азиада2.webp",
+    "/new-content/events/Фотки/Азиада/Азиада3.webp",
+  ],
+  Безруков: [
+    "/new-content/events/Фотки/Безруков/безруков1.webp",
+    "/new-content/events/Фотки/Безруков/безруков2.webp",
+    "/new-content/events/Фотки/Безруков/безруков3.webp",
+  ],
+  НИШ: [
+    "/new-content/events/Фотки/НИШ/НИШ1.webp",
+    "/new-content/events/Фотки/НИШ/НИШ2.webp",
+    "/new-content/events/Фотки/НИШ/НИШ3.webp",
+  ],
+  "Нур Отан": [
+    "/new-content/events/Фотки/Нур Отан/НурОтан(3).webp",
+    "/new-content/events/Фотки/Нур Отан/НурОтан(4).webp",
+    "/new-content/events/Фотки/Нур Отан/НурОтан1.webp",
+    "/new-content/events/Фотки/Нур Отан/НурОтан2.webp",
+    "/new-content/events/Фотки/Нур Отан/НурОтан5.webp",
+  ],
+};
+
+// Видео для раздела Продакшн
+const prodVideos = [
+  {
+    id: "prod-akimat",
+    src: "/new-content/prod/Акимат қайда қарап отыр.mp4",
+    title: "Акимат қайда қарап отыр",
+    description:
+      "Акимат қайда қарап отыр — документальный проект о том, как работают городские службы и специалисты, обеспечивающие повседневный комфорт и безопасность жителей. Сейчас фильм находится в процессе съёмок. Он показывает скрытую сторону города: энергетику, воду, транспорт, медицину, экосистему обслуживания и людей, которые делают жизнь в Астане устойчивой и удобной.",
+  },
+  {
+    id: "prod-parad-pobedy",
+    src: "/new-content/prod/Парад победы_.mp4",
+    title: "Парад ко Дню Победы",
+    description:
+      "Мы обеспечили полное медиасопровождение Парада ко Дню Победы. Отсняли всё: от тяжелой военной техники и парадных расчётов до репетиций и торжественного марша. Работали в режиме реального времени — каждый репортаж выходил в день съёмки. Мы справились с экстремальными сроками и показали стране настоящий масштаб событий!",
+  },
+  {
+    id: "prod-podkasty",
+    src: "/new-content/prod/Подкасты и прямые эфиры.mp4",
+    title: "Подкасты и прямые эфиры",
+    description:
+      "Мы производим подкасты и трансляции полного цикла: тысячи часов записей и прямых эфиров. Современная студия со звукоизоляцией, профессиональным светом, микрофонами и видеосистемами. Мы создаём контент для YouTube, Instagram и любых цифровых платформ, обеспечивая стабильное качество, чистый звук и удобный формат для зрителей.",
+  },
+  {
+    id: "prod-prezidentskiy-rezerv",
+    src: "/new-content/prod/Президентский резерв_.mp4",
+    title: "Президентский резерв",
+    description:
+      "Мы создали 16 документальных фильмов о молодых лидерах и будущих резервах Казахстана. 25 дней съёмок, 6 городов, 3 000 километров пути и 8 терабайтов материала! Проект стал одним из самых масштабных в нашей практике — глубокие интервью, поездки по разным регионам и герои, которые вдохновляют своим профессионализмом и миссией.",
+  },
+];
+
 const galleryImages = [
-  // god-rabochih-profesii
   {
     id: 1,
     src: "/projects/god-rabochih-profesii/Айбек Таңатаров.webp",
@@ -138,7 +334,6 @@ const galleryImages = [
     alt: "Шаханова Алмагуль",
     folder: "god-rabochih-profesii",
   },
-  // jetisu
   {
     id: 16,
     src: "/projects/jetisu/banner.webp",
@@ -157,7 +352,6 @@ const galleryImages = [
     alt: "Jetisu Seat",
     folder: "jetisu",
   },
-  // regbi
   {
     id: 19,
     src: "/projects/regbi/ball.webp",
@@ -248,10 +442,12 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [isVideosLoading, setIsVideosLoading] = useState(true);
   const [loadedVideosCount, setLoadedVideosCount] = useState(0);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState<number | null>(
+    null
+  );
 
-  // Отслеживание загрузки видео - ждем первые 5 секунд каждого видео
   useEffect(() => {
-    const TARGET_BUFFER_SECONDS = 2; // Загружаем первые 5 секунд каждого видео
+    const TARGET_BUFFER_SECONDS = 2;
 
     const checkVideosLoaded = () => {
       const totalVideos = slides.length;
@@ -260,22 +456,16 @@ export default function Home() {
       videoRefs.current.forEach((video, index) => {
         if (!video) return;
 
-        // Проверяем, загружены ли первые 5 секунд видео
         let hasEnoughBuffer = false;
 
         if (video.buffered.length > 0) {
-          // Проверяем буфер - должны быть загружены первые 5 секунд
           const bufferedEnd = video.buffered.end(0);
           hasEnoughBuffer = bufferedEnd >= TARGET_BUFFER_SECONDS;
         } else if (video.readyState >= 3) {
-          // Если буфер еще не готов, но видео готово к воспроизведению
-          // Проверяем duration и готовность
           if (video.duration > 0) {
-            // Если видео короткое (меньше 5 секунд), достаточно readyState >= 3
             hasEnoughBuffer =
               video.duration <= TARGET_BUFFER_SECONDS || video.readyState >= 3;
           } else {
-            // Если duration еще не известен, используем readyState
             hasEnoughBuffer = video.readyState >= 3;
           }
         }
@@ -287,19 +477,14 @@ export default function Home() {
 
       setLoadedVideosCount(loaded);
 
-      // Показываем контент когда все видео загрузили первые 5 секунд
       if (loaded >= totalVideos) {
-        // Небольшая задержка для плавного перехода
         setTimeout(() => {
           setIsVideosLoading(false);
         }, 300);
       }
     };
 
-    // Проверяем каждые 100мс для отслеживания прогресса загрузки
     const interval = setInterval(checkVideosLoaded, 100);
-
-    // Также слушаем события загрузки
     const handleProgress = () => {
       checkVideosLoaded();
     };
@@ -326,7 +511,6 @@ export default function Home() {
       }
     });
 
-    // Первая проверка сразу
     checkVideosLoaded();
 
     return () => {
@@ -359,7 +543,10 @@ export default function Home() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (isGalleryOpen) setIsGalleryOpen(false);
+        if (isGalleryOpen) {
+          setIsGalleryOpen(false);
+          setSelectedVideoIndex(null);
+        }
         if (isMenuOpen) setIsMenuOpen(false);
       }
     };
@@ -372,16 +559,13 @@ export default function Home() {
 
   const [userInteracted, setUserInteracted] = useState(false);
 
-  // УЛЬТРА БЫСТРАЯ предзагрузка видео - МАКСИМАЛЬНАЯ оптимизация
   useEffect(() => {
     if (typeof document !== "undefined" && slides.length > 0) {
-      // Проверяем поддержку WebM один раз
       const video = document.createElement("video");
       const supportsWebM =
         video.canPlayType('video/webm; codecs="vp8, vorbis"') !== "" ||
         video.canPlayType('video/webm; codecs="vp9"') !== "";
 
-      // 1. Resource Hints для максимальной скорости подключения
       if (
         !document.querySelector(
           'link[rel="dns-prefetch"][href="' + window.location.origin + '"]'
@@ -405,45 +589,37 @@ export default function Home() {
         document.head.appendChild(preconnect);
       }
 
-      // 2. Простая предзагрузка через link preload - БЕЗ конфликтов
       slides.forEach((slide, index) => {
-        const videoUrl = supportsWebM ? slide.videoWebm : slide.videoMp4;
+        const videoUrl = slide.videoMp4;
 
         const link = document.createElement("link");
         link.rel = "preload";
         link.as = "video";
         link.href = videoUrl;
-        // Первое видео с высоким приоритетом, остальные с auto
         link.fetchPriority = index === 0 ? "high" : "auto";
         document.head.appendChild(link);
       });
     }
   }, []);
 
-  // Предзагрузка изображений галереи в фоне
   useEffect(() => {
-    // Ждем загрузки основных элементов страницы
     const preloadImages = () => {
-      // Предзагружаем изображения постепенно, чтобы не перегружать браузер
       galleryImages.forEach((image, index) => {
-        // Задержка для каждого изображения, чтобы не блокировать основной контент
         setTimeout(() => {
           const img = new window.Image();
           img.src = image.src;
-          // Предзагружаем через link preload для лучшей производительности
           if (typeof document !== "undefined") {
             const link = document.createElement("link");
             link.rel = "preload";
             link.as = "image";
             link.href = image.src;
-            link.fetchPriority = index < 12 ? "high" : "low"; // Первые 12 с высоким приоритетом
+            link.fetchPriority = index < 12 ? "high" : "low";
             document.head.appendChild(link);
           }
-        }, index * 50); // 50мс между каждым изображением
+        }, index * 50);
       });
     };
 
-    // Начинаем предзагрузку после небольшой задержки, чтобы не мешать основной загрузке
     const timer = setTimeout(preloadImages, 1000);
 
     return () => {
@@ -451,7 +627,6 @@ export default function Home() {
     };
   }, []);
 
-  // Определение мобильного устройства
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -584,22 +759,18 @@ export default function Home() {
     };
   }, [userInteracted]);
 
-  // Управление звуком видео - всегда только среднее видео (индекс 1)
   useEffect(() => {
     videoRefs.current.forEach((video, index) => {
       if (!video) return;
 
       if (!isSoundOn) {
-        // Если звук выключен - все видео беззвучны
         video.muted = true;
       } else {
-        // Если звук включен - звук только у среднего видео (индекс 1)
         video.muted = index !== 1;
       }
     });
   }, [isSoundOn]);
 
-  // Преобразование вертикального скролла в горизонтальный для галереи
   useEffect(() => {
     if (!isGalleryOpen) return;
 
@@ -607,9 +778,7 @@ export default function Home() {
     if (!galleryElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      // Только на десктопе, где есть горизонтальный скролл
       if (window.innerWidth >= 768) {
-        // Проверяем, что курсор находится над галереей
         const rect = galleryElement.getBoundingClientRect();
         const isOverGallery =
           e.clientX >= rect.left &&
@@ -618,9 +787,7 @@ export default function Home() {
           e.clientY <= rect.bottom;
 
         if (isOverGallery && e.deltaY !== 0) {
-          // Предотвращаем стандартный вертикальный скролл
           e.preventDefault();
-          // Преобразуем вертикальный скролл в горизонтальный
           galleryElement.scrollLeft += e.deltaY;
         }
       }
@@ -633,7 +800,6 @@ export default function Home() {
     };
   }, [isGalleryOpen]);
 
-  // Установка адаптивных высот для галереи
   useEffect(() => {
     if (!isGalleryOpen) return;
 
@@ -669,7 +835,6 @@ export default function Home() {
     };
   }, [isGalleryOpen]);
 
-  // Управление flex для видео (на десктопе и мобильных)
   useEffect(() => {
     const updateVideoFlex = () => {
       requestAnimationFrame(() => {
@@ -684,9 +849,9 @@ export default function Home() {
           let flexGrow = 1;
           if (hasActive) {
             if (activeIndex === index) {
-              flexGrow = 8; // 80% от общей высоты/ширины
+              flexGrow = 8;
             } else {
-              flexGrow = 1; // 10% от общей высоты/ширины
+              flexGrow = 1;
             }
           }
           (section as HTMLElement).style.flex = `${flexGrow} 1 0%`;
@@ -704,11 +869,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-(--color-deep-forest) text-(--color-mist)">
-      {/* Глобальный лоадер для видео */}
       {isVideosLoading && (
         <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-(--color-deep-forest) transition-opacity duration-500">
           <div className="flex flex-col items-center gap-6">
-            {/* Логотип */}
             <div className="relative">
               <img
                 src="/logo.webp"
@@ -717,17 +880,6 @@ export default function Home() {
               />
             </div>
 
-            {/* Прогресс бар */}
-            {/* <div className="w-64 sm:w-80 h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-(--color-peach) to-(--color-sand) transition-all duration-300 ease-out"
-                style={{
-                  width: `${(loadedVideosCount / slides.length) * 100}%`,
-                }}
-              />
-            </div> */}
-
-            {/* Анимация точек */}
             <div className="flex gap-2">
               <div
                 className="w-2 h-2 rounded-full bg-(--color-peach) animate-pulse"
@@ -749,10 +901,8 @@ export default function Home() {
       <header
         className="fixed top-0 left-0 right-0 z-50 mx-auto w-full max-w-7xl px-3 py-3 sm:px-6 sm:py-6 border-b border-white/10"
         onClick={(e) => {
-          // На мобильных при клике на пустое пространство хедера кликать первое видео
           if (isMobile) {
             const target = e.target as HTMLElement;
-            // Проверяем, что клик был на header или на его прямом дочернем div, но не на кнопках/ссылках
             if (
               target === e.currentTarget ||
               (target.closest("header > div") &&
@@ -769,7 +919,6 @@ export default function Home() {
         }}
       >
         <div className="relative flex items-center justify-between">
-          {/* Логотип слева на мобильных, по центру на десктопе */}
           <div className="flex items-center gap-2 sm:gap-3 md:absolute md:left-1/2 md:-translate-x-1/2">
             <img
               src="/logo.webp"
@@ -778,7 +927,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Кнопка меню справа на мобильных, слева на десктопе */}
           <button
             onClick={() => setIsMenuOpen(true)}
             className="flex h-10 w-10 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/70 transition hover:border-(--color-peach) hover:bg-(--color-peach)/20 hover:text-(--color-peach) cursor-pointer md:order-first"
@@ -801,7 +949,6 @@ export default function Home() {
             </svg>
           </button>
 
-          {/* Соц сети справа на десктопе, скрыты на мобильных */}
           <div className="hidden md:flex items-center gap-2 sm:gap-6">
             <a
               href="https://wa.me/77715259701"
@@ -871,7 +1018,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Соц сети фиксированные справа по середине экрана на мобильных */}
       <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 md:hidden">
         <a
           href="https://wa.me/77715259701"
@@ -943,7 +1089,6 @@ export default function Home() {
         onTouchStart={() => unlockVideos()}
         onClick={(e) => {
           unlockVideos();
-          // На мобильных сбросить выбор при клике вне видео
           if (isMobile && e.target === e.currentTarget) {
             setMobileSelectedVideoIndex(null);
           }
@@ -951,7 +1096,6 @@ export default function Home() {
         onWheel={() => unlockVideos()}
       >
         {slides.map((slide, index) => {
-          // На мобильных используем mobileSelectedVideoIndex, на десктопе - hoveredVideoIndex
           const isHovered = isMobile
             ? mobileSelectedVideoIndex === index
             : hoveredVideoIndex === index;
@@ -959,14 +1103,12 @@ export default function Home() {
             ? mobileSelectedVideoIndex !== null
             : hoveredVideoIndex !== null;
 
-          // Определяем flex-grow для видео: на мобильных всегда 1, на десктопе с hover эффектом
-          // Используем пропорции: 8:1:1 для hovered:other:other (80%:10%:10%)
           let flexGrow = 1;
           if (hasHoveredVideo) {
             if (isHovered) {
-              flexGrow = 8; // 80% от общей ширины (8 из 10 частей)
+              flexGrow = 8;
             } else {
-              flexGrow = 1; // 10% от общей ширины (1 из 10 частей)
+              flexGrow = 1;
             }
           }
 
@@ -974,17 +1116,15 @@ export default function Home() {
             unlockVideos();
 
             if (isMobile) {
-              // На мобильных: первый клик - выбор (как hover), второй клик - открыть галерею
               if (mobileSelectedVideoIndex === index) {
-                // Второй клик на то же видео - открыть галерею
+                setSelectedVideoIndex(index);
                 setIsGalleryOpen(true);
-                setMobileSelectedVideoIndex(null); // Сбросить выбор после открытия
+                setMobileSelectedVideoIndex(null);
               } else {
-                // Первый клик - выбрать видео (как hover)
                 setMobileSelectedVideoIndex(index);
               }
             } else {
-              // На десктопе - сразу открыть галерею
+              setSelectedVideoIndex(index);
               setIsGalleryOpen(true);
             }
           };
@@ -1017,9 +1157,6 @@ export default function Home() {
                   playsInline
                   preload="auto"
                 >
-                  {/* WebM первый - приоритет для современных устройств (меньше размер) */}
-                  <source src={slide.videoWebm} type="video/webm" />
-                  {/* MP4 fallback только для старых устройств (iOS < 14) */}
                   <source src={slide.videoMp4} type="video/mp4" />
                 </video>
                 <div
@@ -1079,37 +1216,42 @@ export default function Home() {
         })}
       </div>
 
-      {/* Модальное окно галереи */}
       {isGalleryOpen && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-(--color-deep-forest)"
-          onClick={() => setIsGalleryOpen(false)}
+          onClick={() => {
+            setIsGalleryOpen(false);
+            setSelectedVideoIndex(null);
+          }}
         >
-          {/* Фон с анимацией */}
           <div
             className="absolute inset-0 bg-black/90 backdrop-blur-md transition-opacity duration-500"
             style={{
               animation: "fadeIn 0.5s ease-out",
             }}
-            onClick={() => setIsGalleryOpen(false)}
+            onClick={() => {
+              setIsGalleryOpen(false);
+              setSelectedVideoIndex(null);
+            }}
           />
 
-          {/* Контент галереи */}
           <div
             className="relative z-10 h-full w-full overflow-hidden"
             onClick={(e) => {
-              // Если клик был на сам контейнер (пустое пространство), закрываем галерею
               if (e.target === e.currentTarget) {
                 setIsGalleryOpen(false);
+                setSelectedVideoIndex(null);
               }
             }}
             style={{
               animation: "slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
           >
-            {/* Кнопка закрытия */}
             <button
-              onClick={() => setIsGalleryOpen(false)}
+              onClick={() => {
+                setIsGalleryOpen(false);
+                setSelectedVideoIndex(null);
+              }}
               className="fixed top-6 right-6 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
               aria-label="Закрыть"
             >
@@ -1129,7 +1271,6 @@ export default function Home() {
               </svg>
             </button>
 
-            {/* Галерея */}
             <div
               ref={galleryScrollRef}
               className="gallery-scroll h-full w-full overflow-y-auto overflow-x-hidden md:overflow-x-auto md:overflow-y-hidden px-4 sm:px-6 py-20"
@@ -1137,15 +1278,29 @@ export default function Home() {
                 animation: "galleryContainerFade 0.8s ease-out",
               }}
               onClick={(e) => {
-                // Если клик был на сам контейнер (пустое пространство/padding), закрываем галерею
                 if (e.target === e.currentTarget) {
                   setIsGalleryOpen(false);
+                  setSelectedVideoIndex(null);
                 }
               }}
             >
-              {/* Мобильная версия - вертикальный скролл, одинаковый размер */}
               <div className="md:hidden grid grid-cols-1 gap-4 pb-4">
-                {galleryImages.map((image, index) => {
+                {(selectedVideoIndex === 0
+                  ? designMainGallery
+                  : selectedVideoIndex === 1
+                  ? prodVideos
+                  : selectedVideoIndex === 2
+                  ? eventsMainGallery
+                  : galleryImages
+                ).map((item, index) => {
+                  // Для prod это видео, для остальных - изображения
+                  const isVideo = selectedVideoIndex === 1;
+                  const imageId = item.id;
+                  const imageSrc = isVideo ? null : item.src;
+                  const imageAlt = isVideo
+                    ? (item as any).title || (item as any).description || ""
+                    : (item as any).alt || (item as any).description || "";
+                  const videoSrc = isVideo ? item.src : null;
                   const animationTypes = [
                     "gallerySlideUp",
                     "gallerySlideRight",
@@ -1156,135 +1311,199 @@ export default function Home() {
                   const animationType =
                     animationTypes[index % animationTypes.length];
                   const delay = index * 0.08;
-
                   return (
                     <div
-                      key={image.id}
+                      key={imageId}
                       onClick={() => {
                         if (typeof window !== "undefined") {
                           NProgress.start();
                         }
-                        router.push(`/gallery/${image.id}`);
+                        if (selectedVideoIndex === 0) {
+                          router.push(`/gallery/design/${imageId}`);
+                        } else if (selectedVideoIndex === 1) {
+                          router.push(`/gallery/prod/${imageId}`);
+                        } else if (selectedVideoIndex === 2) {
+                          router.push(`/gallery/events/${imageId}`);
+                        } else {
+                          router.push(`/gallery/${imageId}`);
+                        }
                       }}
-                      className="group relative w-full aspect-square cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
+                      className={`group relative w-full cursor-pointer overflow-hidden backdrop-blur-sm ${
+                        selectedVideoIndex === 0
+                          ? imageId === "design-zakon-poryadok"
+                            ? "bg-black aspect-square"
+                            : "bg-white aspect-square"
+                          : selectedVideoIndex === 1
+                          ? "bg-black/30 aspect-video"
+                          : "bg-black/30 aspect-square"
+                      }`}
                       style={{
                         animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                         opacity: 0,
                       }}
                     >
-                      <div className="absolute inset-0">
-                        <ImageWithPlaceholder
-                          src={image.src}
-                          alt={image.alt}
-                          title={image.alt}
-                          priority={index < 6} // Первые 6 изображений с высоким приоритетом
+                      {isVideo && videoSrc ? (
+                        <video
+                          className="h-full w-full object-cover"
+                          src={videoSrc}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="auto"
                         />
-                      </div>
-                      {/* Затемнение только на десктопе, на мобильных скрыто */}
-                      <div className="hidden md:block absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                      ) : imageSrc ? (
+                        <div className="absolute inset-0">
+                          <ImageWithPlaceholder
+                            src={imageSrc}
+                            alt={imageAlt}
+                            title={imageAlt}
+                            priority={index < 6}
+                          />
+                        </div>
+                      ) : null}
+                      <div
+                        className={`hidden md:block absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
+                          selectedVideoIndex === 0
+                            ? String(imageId) === "design-zakon-poryadok"
+                              ? "bg-black/20"
+                              : "bg-white/20"
+                            : "bg-black/20"
+                        }`}
+                      />
                     </div>
                   );
                 })}
               </div>
 
-              {/* Десктопная версия - горизонтальный скролл с колонками */}
               <div
                 className="hidden md:flex h-full gap-2"
                 style={{ minWidth: "max-content" }}
               >
                 {(() => {
-                  // Разные размеры для галереи
-                  // Высоты для обычных картинок и больших (в 2 раза больше)
-                  const rowHeightsDesktop = [14, 16, 18, 15, 17, 14, 18, 16];
-                  const rowHeightsDesktopLarge = [
-                    28, 32, 36, 30, 34, 28, 36, 32,
-                  ]; // В 2 раза больше
-                  const sizeVariants = [
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-64", // В 2 раза больше (было w-32)
-                      widthTablet: "sm:w-80", // В 2 раза больше (было sm:w-40)
-                      widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
-                      isLarge: true,
-                    },
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-96", // В 2 раза больше (было w-48)
-                      widthTablet: "sm:w-[512px]", // В 2 раза больше (было sm:w-64 = 256px)
-                      widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
-                      isLarge: true,
-                    },
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-48",
-                      widthTablet: "sm:w-64",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-32",
-                      widthTablet: "sm:w-40",
-                      widthDesktop: "lg:w-80",
-                      isLarge: false,
-                    },
-                    {
-                      width: "w-64", // В 2 раза больше (было w-32)
-                      widthTablet: "sm:w-80", // В 2 раза больше (было sm:w-40)
-                      widthDesktop: "lg:w-[648px]", // В 2 раза больше (было lg:w-80 = 320px)
-                      isLarge: true,
-                    },
-                  ];
+                  const currentItems =
+                    selectedVideoIndex === 0
+                      ? designMainGallery
+                      : selectedVideoIndex === 1
+                      ? prodVideos
+                      : selectedVideoIndex === 2
+                      ? eventsMainGallery
+                      : galleryImages;
+                  const isVideo = selectedVideoIndex === 1;
+                  // Для видео используем одинаковые размеры, чтобы все были видны
+                  const sizeVariants = isVideo
+                    ? [
+                        {
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                      ]
+                    : [
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-[648px]",
+                          isLarge: true,
+                        },
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-48",
+                          widthTablet: "sm:w-64",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-[648px]",
+                          isLarge: true,
+                        },
+                      ];
+                  const rowHeightsDesktop = isVideo
+                    ? [16, 16, 16, 16]
+                    : [14, 16, 18, 15, 17, 14, 18, 16];
+                  const rowHeightsDesktopLarge = isVideo
+                    ? [16, 16, 16, 16]
+                    : [28, 32, 36, 30, 34, 28, 36, 32];
 
-                  // Распределяем картинки по колонкам
-                  // Если в колонке есть большая картинка:
-                  //   - Вариант 1: сверху 2 маленькие горизонтально, внизу 1 большая
-                  //   - Вариант 2: сверху 1 большая, внизу 2 маленькие горизонтально
-                  // Иначе: 3 картинки вертикально
                   const columns: Array<{
                     items: Array<{
-                      image: (typeof galleryImages)[0];
+                      image: any;
                       index: number;
                       rowIndex: number;
                     }>;
                     hasLargeImage: boolean;
-                    largeImageOnTop: boolean; // true = большая сверху, false = большая снизу
+                    largeImageOnTop: boolean;
                   }> = [];
 
                   let i = 0;
-                  while (i < galleryImages.length) {
-                    // Проверяем, есть ли большая картинка в следующих 3 картинках
+                  while (i < currentItems.length) {
                     let hasLargeImage = false;
                     let largeImageIndex = -1;
                     for (
                       let check = 0;
-                      check < 3 && i + check < galleryImages.length;
+                      check < 3 && i + check < currentItems.length;
                       check++
                     ) {
                       const checkIndex = i + check;
@@ -1298,30 +1517,26 @@ export default function Home() {
                     }
 
                     const column: Array<{
-                      image: (typeof galleryImages)[0];
+                      image: any;
                       index: number;
                       rowIndex: number;
                     }> = [];
 
                     if (hasLargeImage) {
-                      // Колонка с большой картинкой: чередуем варианты
-                      // Вариант 1: 2 маленькие сверху + 1 большая внизу
-                      // Вариант 2: 1 большая сверху + 2 маленькие внизу
-                      const largeImageOnTop = columns.length % 2 === 0; // Чередуем варианты
+                      const largeImageOnTop = columns.length % 2 === 0;
 
                       const smallImages: Array<{
-                        image: (typeof galleryImages)[0];
+                        image: any;
                         index: number;
                       }> = [];
                       let largeImage: {
-                        image: (typeof galleryImages)[0];
+                        image: any;
                         index: number;
                       } | null = null;
 
-                      // Собираем картинки из следующих 3 позиций
                       for (
                         let j = 0;
-                        j < 3 && i + j < galleryImages.length;
+                        j < 3 && i + j < currentItems.length;
                         j++
                       ) {
                         const currentIndex = i + j;
@@ -1330,28 +1545,27 @@ export default function Home() {
 
                         if (currentSize.isLarge) {
                           largeImage = {
-                            image: galleryImages[currentIndex],
+                            image: currentItems[currentIndex],
                             index: currentIndex,
                           };
                         } else if (smallImages.length < 2) {
                           smallImages.push({
-                            image: galleryImages[currentIndex],
+                            image: currentItems[currentIndex],
                             index: currentIndex,
                           });
                         }
                       }
 
-                      // Если не хватает маленьких, берем из следующих позиций
                       let nextIndex = i + 3;
                       while (
                         smallImages.length < 2 &&
-                        nextIndex < galleryImages.length
+                        nextIndex < currentItems.length
                       ) {
                         const currentSize =
                           sizeVariants[nextIndex % sizeVariants.length];
                         if (!currentSize.isLarge) {
                           smallImages.push({
-                            image: galleryImages[nextIndex],
+                            image: currentItems[nextIndex],
                             index: nextIndex,
                           });
                         }
@@ -1360,32 +1574,30 @@ export default function Home() {
 
                       if (largeImage) {
                         if (largeImageOnTop) {
-                          // Вариант 2: большая сверху, маленькие внизу
                           column.push({
                             image: largeImage.image,
                             index: largeImage.index,
-                            rowIndex: 0, // Верхний ряд
+                            rowIndex: 0,
                           });
                           smallImages.forEach((item) => {
                             column.push({
                               image: item.image,
                               index: item.index,
-                              rowIndex: 1, // Нижний ряд
+                              rowIndex: 1,
                             });
                           });
                         } else {
-                          // Вариант 1: маленькие сверху, большая внизу
                           smallImages.forEach((item) => {
                             column.push({
                               image: item.image,
                               index: item.index,
-                              rowIndex: 0, // Верхний ряд
+                              rowIndex: 0,
                             });
                           });
                           column.push({
                             image: largeImage.image,
                             index: largeImage.index,
-                            rowIndex: 1, // Нижний ряд
+                            rowIndex: 1,
                           });
                         }
                       }
@@ -1398,14 +1610,13 @@ export default function Home() {
                       });
                       continue;
                     } else {
-                      // Обычная колонка: 3 картинки вертикально
                       for (
                         let j = 0;
-                        j < 3 && i + j < galleryImages.length;
+                        j < 3 && i + j < currentItems.length;
                         j++
                       ) {
                         column.push({
-                          image: galleryImages[i + j],
+                          image: currentItems[i + j],
                           index: i + j,
                           rowIndex: j,
                         });
@@ -1420,9 +1631,59 @@ export default function Home() {
                     });
                   }
 
+                  // Для видео показываем в виде квадрата 2x2
+                  if (isVideo) {
+                    return (
+                      <div
+                        key="videos-grid"
+                        className="grid grid-cols-2 gap-2 h-full w-full"
+                      >
+                        {currentItems.map((item, index) => {
+                          const animationTypes = [
+                            "gallerySlideUp",
+                            "gallerySlideRight",
+                            "gallerySlideLeft",
+                            "galleryScale",
+                            "galleryFade",
+                          ];
+                          const animationType =
+                            animationTypes[index % animationTypes.length];
+                          const delay = index * 0.08;
+
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => {
+                                if (typeof window !== "undefined") {
+                                  NProgress.start();
+                                }
+                                router.push(`/gallery/prod/${item.id}`);
+                              }}
+                              className="group relative cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
+                              style={{
+                                animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
+                                opacity: 0,
+                              }}
+                            >
+                              <video
+                                className="h-full w-full object-cover"
+                                src={item.src}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                              />
+                              <div className="absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+
                   return columns.map((column, columnIndex) => {
                     if (column.hasLargeImage) {
-                      // Колонка с большой картинкой: поддерживаем оба варианта
                       const topRowItems = column.items.filter(
                         (item) => item.rowIndex === 0
                       );
@@ -1430,33 +1691,30 @@ export default function Home() {
                         (item) => item.rowIndex === 1
                       );
 
-                      // Определяем, где большая картинка
                       const topRowHasLarge = topRowItems.some((item) => {
                         const size =
                           sizeVariants[item.index % sizeVariants.length];
                         return size.isLarge;
                       });
 
-                      // Вычисляем высоты
                       const topRowHeight = topRowHasLarge
-                        ? rowHeightsDesktopLarge[0] || 28 // Большая сверху
+                        ? rowHeightsDesktopLarge[0] || 28
                         : topRowItems.length > 0
                         ? rowHeightsDesktop[0] || 14
-                        : 0; // Маленькие сверху
+                        : 0;
                       const bottomRowHeight = topRowHasLarge
                         ? bottomRowItems.length > 0
                           ? rowHeightsDesktop[0] || 14
-                          : 0 // Маленькие внизу
+                          : 0
                         : bottomRowItems.length > 0
                         ? rowHeightsDesktopLarge[1] || 28
-                        : 0; // Большая внизу
+                        : 0;
                       const totalHeight = topRowHeight + bottomRowHeight;
                       const topRowHeightPercent =
                         (topRowHeight / totalHeight) * 100;
                       const bottomRowHeightPercent =
                         (bottomRowHeight / totalHeight) * 100;
 
-                      // Функция для рендеринга картинки
                       const renderImage = (
                         item: {
                           image: (typeof galleryImages)[0];
@@ -1479,20 +1737,42 @@ export default function Home() {
                           animationTypes[index % animationTypes.length];
                         const delay = index * 0.08;
 
+                        const itemSrc = isVideo ? image.src : image.src;
+                        const itemAlt = isVideo
+                          ? (image as any).title || (image as any).description
+                          : (image as any).alt || (image as any).description;
+                        const itemTitle = isVideo
+                          ? (image as any).title || (image as any).description
+                          : (image as any).alt || (image as any).description;
+
                         return (
                           <div
-                            key={image.id}
+                            key={image.id || image.src}
                             onClick={() => {
                               if (typeof window !== "undefined") {
                                 NProgress.start();
                               }
-                              router.push(`/gallery/${image.id}`);
+                              if (selectedVideoIndex === 0) {
+                                router.push(`/gallery/design/${image.id}`);
+                              } else if (selectedVideoIndex === 1) {
+                                router.push(`/gallery/prod/${image.id}`);
+                              } else if (selectedVideoIndex === 2) {
+                                router.push(`/gallery/events/${image.id}`);
+                              } else {
+                                router.push(`/gallery/${image.id}`);
+                              }
                             }}
                             className={`group relative ${
                               isRow ? "flex-1" : ""
                             } ${size.width} ${size.widthTablet} ${
                               size.widthDesktop
-                            } cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                            } cursor-pointer overflow-hidden backdrop-blur-sm ${
+                              selectedVideoIndex === 0
+                                ? String(image.id) === "design-zakon-poryadok"
+                                  ? "bg-black"
+                                  : "bg-white"
+                                : "bg-black/30"
+                            }`}
                             style={{
                               height: isRow
                                 ? "100%"
@@ -1502,14 +1782,32 @@ export default function Home() {
                               opacity: 0,
                             }}
                           >
-                            <div className="absolute inset-0">
-                              <ImageWithPlaceholder
-                                src={image.src}
-                                alt={image.alt}
-                                title={image.alt}
+                            {isVideo ? (
+                              <video
+                                className="h-full w-full object-cover"
+                                src={itemSrc}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
                               />
-                            </div>
-                            <div className="absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                            ) : (
+                              <div className="absolute inset-0">
+                                <ImageWithPlaceholder
+                                  src={itemSrc}
+                                  alt={itemAlt}
+                                  title={itemTitle}
+                                />
+                              </div>
+                            )}
+                            <div
+                              className={`absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
+                                selectedVideoIndex === 0
+                                  ? "bg-white/20"
+                                  : "bg-black/20"
+                              }`}
+                            />
                           </div>
                         );
                       };
@@ -1519,14 +1817,11 @@ export default function Home() {
                           key={columnIndex}
                           className="flex flex-col gap-2 shrink-0 h-full"
                         >
-                          {/* Верхний ряд */}
                           {topRowHasLarge ? (
-                            // Вариант 2: большая картинка сверху
                             topRowItems.map((item) =>
                               renderImage(item, topRowHeightPercent, false)
                             )
                           ) : (
-                            // Вариант 1: 2 маленькие картинки сверху горизонтально
                             <div
                               className="flex gap-2 shrink-0"
                               style={{
@@ -1539,9 +1834,7 @@ export default function Home() {
                             </div>
                           )}
 
-                          {/* Нижний ряд */}
                           {topRowHasLarge ? (
-                            // Вариант 2: 2 маленькие картинки внизу горизонтально
                             <div
                               className="flex gap-2 shrink-0"
                               style={{
@@ -1553,7 +1846,6 @@ export default function Home() {
                               )}
                             </div>
                           ) : (
-                            // Вариант 1: большая картинка внизу
                             bottomRowItems.map((item) =>
                               renderImage(item, bottomRowHeightPercent, false)
                             )
@@ -1561,7 +1853,6 @@ export default function Home() {
                         </div>
                       );
                     } else {
-                      // Обычная колонка: 3 картинки вертикально
                       const rowHeights = column.items.map((item) => {
                         const rowIndex = item.rowIndex;
                         const size =
@@ -1604,16 +1895,51 @@ export default function Home() {
                               animationTypes[index % animationTypes.length];
                             const delay = index * 0.08;
 
+                            const itemSrc = isVideo ? image.src : image.src;
+                            const itemAlt = isVideo
+                              ? (image as any).title ||
+                                (image as any).description ||
+                                ""
+                              : (image as any).alt ||
+                                (image as any).description ||
+                                "";
+                            const itemTitle = isVideo
+                              ? (image as any).title ||
+                                (image as any).description ||
+                                ""
+                              : (image as any).alt ||
+                                (image as any).description ||
+                                "";
+
                             return (
                               <div
-                                key={image.id}
+                                key={image.id || image.src}
                                 onClick={() => {
                                   if (typeof window !== "undefined") {
                                     NProgress.start();
                                   }
-                                  router.push(`/gallery/${image.id}`);
+                                  if (selectedVideoIndex === 0) {
+                                    router.push(`/gallery/design/${image.id}`);
+                                  } else if (selectedVideoIndex === 1) {
+                                    router.push(`/gallery/prod/${image.id}`);
+                                  } else if (selectedVideoIndex === 2) {
+                                    router.push(`/gallery/events/${image.id}`);
+                                  } else {
+                                    router.push(`/gallery/${image.id}`);
+                                  }
                                 }}
-                                className={`group relative ${size.width} ${size.widthTablet} ${size.widthDesktop} cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm`}
+                                className={`group relative ${size.width} ${
+                                  size.widthTablet
+                                } ${
+                                  size.widthDesktop
+                                } cursor-pointer overflow-hidden backdrop-blur-sm ${
+                                  selectedVideoIndex === 0
+                                    ? String(image.id) ===
+                                      "design-zakon-poryadok"
+                                      ? "bg-black"
+                                      : "bg-white"
+                                    : "bg-black/30"
+                                }`}
                                 style={{
                                   height: `calc(${heightPercentage}% - 0.5rem)`,
                                   flexShrink: 0,
@@ -1621,14 +1947,32 @@ export default function Home() {
                                   opacity: 0,
                                 }}
                               >
-                                <div className="absolute inset-0">
-                                  <ImageWithPlaceholder
-                                    src={image.src}
-                                    alt={image.alt}
-                                    title={image.alt}
+                                {isVideo ? (
+                                  <video
+                                    className="h-full w-full object-cover"
+                                    src={itemSrc}
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    preload="auto"
                                   />
-                                </div>
-                                <div className="absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                                ) : (
+                                  <div className="absolute inset-0">
+                                    <ImageWithPlaceholder
+                                      src={itemSrc}
+                                      alt={itemAlt}
+                                      title={itemTitle}
+                                    />
+                                  </div>
+                                )}
+                                <div
+                                  className={`absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
+                                    selectedVideoIndex === 0
+                                      ? "bg-white/20"
+                                      : "bg-black/20"
+                                  }`}
+                                />
                               </div>
                             );
                           })}
@@ -1643,7 +1987,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Модальное окно контактов */}
       {isMenuOpen && (
         <div
           className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
@@ -1682,7 +2025,6 @@ export default function Home() {
             </h2>
 
             <div className="space-y-4 sm:space-y-6">
-              {/* Адрес */}
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <svg
@@ -1714,7 +2056,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Почта */}
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <svg
@@ -1743,7 +2084,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Телефон */}
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <svg
@@ -1772,7 +2112,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* 2GIS */}
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <svg
@@ -1797,13 +2136,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Социальные сети */}
               <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10">
                 <p className="mb-3 sm:mb-4 text-xs sm:text-sm font-medium text-white/60">
                   Социальные сети
                 </p>
                 <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
-                  {/* WhatsApp */}
                   <a
                     href="https://wa.me/77715259701"
                     target="_blank"
@@ -1830,7 +2167,6 @@ export default function Home() {
                     </div>
                   </a>
 
-                  {/* Instagram */}
                   <a
                     href="https://www.instagram.com/tolegend.art?igsh=Zm55OTlwZ3Flc29w"
                     target="_blank"
@@ -1857,7 +2193,6 @@ export default function Home() {
                     </div>
                   </a>
 
-                  {/* Telegram */}
                   <a
                     href="https://t.me/tolegend_production"
                     target="_blank"
@@ -1884,7 +2219,6 @@ export default function Home() {
                     </div>
                   </a>
 
-                  {/* TikTok */}
                   <a
                     href="https://www.tiktok.com/@tolegend.art?_t=ZM-8z0EeVDqEe0&_r=1"
                     target="_blank"
@@ -1911,7 +2245,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Карта */}
               <div className="mt-4 sm:mt-6">
                 <p className="mb-2 text-xs sm:text-sm text-white/60">
                   Расположение на карте
@@ -1952,7 +2285,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Кнопка звука в правом нижнем углу */}
       <button
         onClick={() => setIsSoundOn(!isSoundOn)}
         className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/60 backdrop-blur-md text-white/70 transition hover:border-(--color-peach) hover:bg-black/80 hover:text-(--color-peach) cursor-pointer shadow-lg"

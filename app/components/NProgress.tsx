@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
 
-// Настройка NProgress
 if (typeof window !== "undefined") {
   NProgress.configure({
     showSpinner: false,
@@ -34,7 +33,6 @@ export function NProgressProvider() {
           const url = new URL(anchor.href);
           const currentUrl = new URL(window.location.href);
           
-          // Проверяем, что это внутренняя ссылка и путь изменился
           if (
             url.origin === currentUrl.origin &&
             url.pathname !== currentUrl.pathname
@@ -42,12 +40,10 @@ export function NProgressProvider() {
             NProgress.start();
           }
         } catch (error) {
-          // Игнорируем ошибки парсинга URL
         }
       }
     };
 
-    // Обработка программной навигации через router.push
     const originalPushState = history.pushState;
     history.pushState = function (...args) {
       const result = originalPushState.apply(history, args);
@@ -58,7 +54,6 @@ export function NProgressProvider() {
             NProgress.start();
           }
         } catch (error) {
-          // Игнорируем ошибки парсинга URL
         }
       }
       return result;

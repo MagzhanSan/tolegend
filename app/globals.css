@@ -200,9 +200,6 @@ body {
   cursor: not-allowed !important;
 }
 
-/* Адаптивные высоты для галереи будут установлены через JavaScript */
-
-/* NProgress Styles */
 #nprogress {
   pointer-events: none;
 }
@@ -237,8 +234,6 @@ body {
   position: absolute;
 }
 
-/* Кастомные скроллбары */
-/* Для WebKit браузеров (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -277,18 +272,15 @@ body {
   );
 }
 
-/* Горизонтальный скроллбар */
 ::-webkit-scrollbar:horizontal {
   height: 10px;
 }
 
-/* Для Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 203, 154, 0.6) rgba(0, 0, 0, 0.1);
 }
 
-/* Специальные стили для галереи */
 .gallery-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 203, 154, 0.6) rgba(0, 0, 0, 0.1);
