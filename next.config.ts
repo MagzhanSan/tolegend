@@ -17,17 +17,6 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // Экспериментальные оптимизации
-  experimental: {
-    optimizeCss: true, // Оптимизация CSS
-    optimizePackageImports: ["react", "react-dom", "nprogress"], // Tree shaking
-  },
-
-  // Оптимизация компилятора
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production", // Удаление console.log в продакшене
-  },
-
   // HTTP заголовки для кэширования
   async headers() {
     return [
