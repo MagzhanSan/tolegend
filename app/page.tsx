@@ -1,6 +1,14 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  memo,
+} from "react";
 import { useRouter } from "next/navigation";
 import NProgress from "nprogress";
 import Image from "next/image";
@@ -65,15 +73,6 @@ const designMainGallery = [
     id: "design-zakon-poryadok",
     src: "/new-content/design/Главная галерея/Закон и порядок.webp",
     alt: "Закон и порядок",
-    childFolder: "Закон и порядок",
-    title: "Закон и Порядок",
-    description:
-      "Мы разработали визуальную коммуникацию для проекта, направленного на формирование культуры правосознания и укрепление гражданской ответственности. Подготовили серию образовательных материалов, инфографику и медиа-контент, которые объясняют важные правовые нормы простым и понятным языком. Проект способствует повышению доверия к государственным институтам и формирует уважение к закону.",
-  },
-  {
-    id: "design-zakon-poryadok-chb",
-    src: "/new-content/design/Главная галерея/Закон и порядок ЧБ.webp",
-    alt: "Закон и порядок ЧБ",
     childFolder: "Закон и порядок",
     title: "Закон и Порядок",
     description:
@@ -366,19 +365,37 @@ const galleryImages = [
   },
 ];
 
-function ImageWithPlaceholder({
+// Мемоизированный компонент для изображений - предотвращает ненужные ререндеры
+const ImageWithPlaceholder = memo(function ImageWithPlaceholder({
   src,
   alt,
   title,
   priority = false,
+  className,
 }: {
   src: string;
   alt: string;
   title: string;
   priority?: boolean;
+  className?: string;
 }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Мемоизированные обработчики
+  const handleError = useCallback(() => setImageError(true), []);
+  const handleLoad = useCallback(() => setImageLoaded(true), []);
+
+  // Мемоизированный className
+  const imageClassName = useMemo(
+    () =>
+      `${className || "object-cover"} transition-all duration-500 ${
+        imageLoaded
+          ? "opacity-100 group-hover:scale-105 group-hover:brightness-110"
+          : "opacity-0"
+      }`,
+    [className, imageLoaded]
+  );
 
   return (
     <div className="relative h-full w-full">
@@ -388,13 +405,9 @@ function ImageWithPlaceholder({
           alt={alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          onError={() => setImageError(true)}
-          onLoad={() => setImageLoaded(true)}
-          className={`object-cover transition-all duration-700 ${
-            imageLoaded
-              ? "opacity-100 group-hover:scale-110 group-hover:brightness-110"
-              : "opacity-0"
-          }`}
+          onError={handleError}
+          onLoad={handleLoad}
+          className={imageClassName}
           loading={priority ? "eager" : "lazy"}
           unoptimized={false}
           priority={priority}
@@ -424,7 +437,7 @@ function ImageWithPlaceholder({
       ) : null}
     </div>
   );
-}
+});
 
 export default function Home() {
   const router = useRouter();
@@ -447,27 +460,25 @@ export default function Home() {
   );
 
   useEffect(() => {
-    const TARGET_BUFFER_SECONDS = 2;
+    // Загружаем только первые 5 секунды для максимально быстрого старта
+    const TARGET_BUFFER_SECONDS = 5;
 
     const checkVideosLoaded = () => {
       const totalVideos = slides.length;
       let loaded = 0;
 
-      videoRefs.current.forEach((video, index) => {
+      videoRefs.current.forEach((video) => {
         if (!video) return;
 
         let hasEnoughBuffer = false;
 
-        if (video.buffered.length > 0) {
+        // Проверяем готовность видео к воспроизведению
+        if (video.readyState >= 3) {
+          hasEnoughBuffer = true;
+        } else if (video.buffered.length > 0) {
           const bufferedEnd = video.buffered.end(0);
+          // Проверяем, загружены ли первые 3 секунды
           hasEnoughBuffer = bufferedEnd >= TARGET_BUFFER_SECONDS;
-        } else if (video.readyState >= 3) {
-          if (video.duration > 0) {
-            hasEnoughBuffer =
-              video.duration <= TARGET_BUFFER_SECONDS || video.readyState >= 3;
-          } else {
-            hasEnoughBuffer = video.readyState >= 3;
-          }
         }
 
         if (hasEnoughBuffer) {
@@ -477,10 +488,9 @@ export default function Home() {
 
       setLoadedVideosCount(loaded);
 
+      // Скрываем лоадер как только первые секунды всех видео загружены
       if (loaded >= totalVideos) {
-        setTimeout(() => {
-          setIsVideosLoading(false);
-        }, 300);
+        setIsVideosLoading(false);
       }
     };
 
@@ -559,6 +569,20 @@ export default function Home() {
 
   const [userInteracted, setUserInteracted] = useState(false);
 
+  // Регистрация Service Worker для кэширования
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((registration) => {
+          console.log("SW registered:", registration.scope);
+        })
+        .catch((error) => {
+          console.log("SW registration failed:", error);
+        });
+    }
+  }, []);
+
   useEffect(() => {
     if (typeof document !== "undefined" && slides.length > 0) {
       const video = document.createElement("video");
@@ -589,6 +613,7 @@ export default function Home() {
         document.head.appendChild(preconnect);
       }
 
+      // Предзагрузка метаданных главных видео (быстро, только информация о видео)
       slides.forEach((slide, index) => {
         const videoUrl = slide.videoMp4;
 
@@ -597,6 +622,16 @@ export default function Home() {
         link.as = "video";
         link.href = videoUrl;
         link.fetchPriority = index === 0 ? "high" : "auto";
+        document.head.appendChild(link);
+      });
+
+      // Параллельно начинаем загрузку видео из prod раздела с низким приоритетом
+      prodVideos.forEach((video) => {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "video";
+        link.href = video.src;
+        link.fetchPriority = "low"; // Низкий приоритет, чтобы не мешать главным видео
         document.head.appendChild(link);
       });
     }
@@ -1155,7 +1190,19 @@ export default function Home() {
                   loop
                   muted
                   playsInline
-                  preload="auto"
+                  preload="metadata"
+                  onLoadedMetadata={(e) => {
+                    // После загрузки метаданных, начинаем загружать первые 7 секунд
+                    const video = e.currentTarget;
+                    // Переключаемся на загрузку первых 7 секунд для быстрого старта
+                    video.preload = "auto";
+                    // После начала воспроизведения, продолжаем догружать остальное
+                    const onPlay = () => {
+                      // Видео играет, продолжаем загрузку остального контента
+                      video.removeEventListener("play", onPlay);
+                    };
+                    video.addEventListener("play", onPlay);
+                  }}
                 >
                   <source src={slide.videoMp4} type="video/mp4" />
                 </video>
@@ -1343,24 +1390,44 @@ export default function Home() {
                       }}
                     >
                       {isVideo && videoSrc ? (
-                        <video
-                          className="h-full w-full object-cover"
-                          src={videoSrc}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload="auto"
-                        />
-                      ) : imageSrc ? (
-                        <div className="absolute inset-0">
-                          <ImageWithPlaceholder
-                            src={imageSrc}
-                            alt={imageAlt}
-                            title={imageAlt}
-                            priority={index < 6}
+                        <>
+                          <video
+                            className="h-full w-full object-cover"
+                            src={videoSrc}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload={
+                              selectedVideoIndex === 1 ? "auto" : "metadata"
+                            }
                           />
-                        </div>
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                            <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                              {(item as any).title || ""}
+                            </h3>
+                          </div>
+                        </>
+                      ) : imageSrc ? (
+                        <>
+                          <div className="absolute inset-0">
+                            <ImageWithPlaceholder
+                              src={imageSrc}
+                              alt={imageAlt}
+                              title={imageAlt}
+                              priority={index < 6}
+                            />
+                          </div>
+                          {(selectedVideoIndex === 2 ||
+                            selectedVideoIndex === 0) &&
+                            (item as any).title && (
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                  {(item as any).title || ""}
+                                </h3>
+                              </div>
+                            )}
+                        </>
                       ) : null}
                       <div
                         className={`hidden md:block absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
@@ -1631,11 +1698,11 @@ export default function Home() {
                     });
                   }
 
-                  // Для видео показываем в виде квадрата 2x2
-                  if (isVideo) {
+                  // Для видео и дизайна показываем в виде квадрата 2x2
+                  if (isVideo || selectedVideoIndex === 0) {
                     return (
                       <div
-                        key="videos-grid"
+                        key={isVideo ? "videos-grid" : "design-grid"}
                         className="grid grid-cols-2 gap-2 h-full w-full"
                       >
                         {currentItems.map((item, index) => {
@@ -1649,6 +1716,12 @@ export default function Home() {
                           const animationType =
                             animationTypes[index % animationTypes.length];
                           const delay = index * 0.08;
+                          const isDesign = selectedVideoIndex === 0;
+                          const bgColor = isDesign
+                            ? String(item.id) === "design-zakon-poryadok"
+                              ? "bg-black"
+                              : "bg-white"
+                            : "bg-black/30";
 
                           return (
                             <div
@@ -1657,24 +1730,78 @@ export default function Home() {
                                 if (typeof window !== "undefined") {
                                   NProgress.start();
                                 }
-                                router.push(`/gallery/prod/${item.id}`);
+                                if (isVideo) {
+                                  router.push(`/gallery/prod/${item.id}`);
+                                } else if (isDesign) {
+                                  router.push(`/gallery/design/${item.id}`);
+                                }
                               }}
-                              className="group relative cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
+                              className={`group relative cursor-pointer overflow-hidden backdrop-blur-sm ${bgColor}`}
                               style={{
                                 animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
                                 opacity: 0,
                               }}
                             >
-                              <video
-                                className="h-full w-full object-cover"
-                                src={item.src}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
+                              {isVideo ? (
+                                <>
+                                  <video
+                                    className="h-full w-full object-cover"
+                                    src={item.src}
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    preload={
+                                      selectedVideoIndex === 1
+                                        ? "auto"
+                                        : "metadata"
+                                    }
+                                  />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                    <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                      {(item as any).title || ""}
+                                    </h3>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="absolute inset-0">
+                                    <ImageWithPlaceholder
+                                      src={item.src}
+                                      alt={
+                                        (item as any).alt ||
+                                        (item as any).title ||
+                                        ""
+                                      }
+                                      title={
+                                        (item as any).title ||
+                                        (item as any).alt ||
+                                        ""
+                                      }
+                                      className={
+                                        isDesign ? "object-contain" : undefined
+                                      }
+                                    />
+                                  </div>
+                                  {isDesign && (item as any).title && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                      <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                        {(item as any).title || ""}
+                                      </h3>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                              <div
+                                className={`absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
+                                  isDesign
+                                    ? String(item.id) ===
+                                      "design-zakon-poryadok"
+                                      ? "bg-black/20"
+                                      : "bg-white/20"
+                                    : "bg-black/20"
+                                }`}
                               />
-                              <div className="absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
                             </div>
                           );
                         })}
@@ -1783,28 +1910,57 @@ export default function Home() {
                             }}
                           >
                             {isVideo ? (
-                              <video
-                                className="h-full w-full object-cover"
-                                src={itemSrc}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
-                              />
-                            ) : (
-                              <div className="absolute inset-0">
-                                <ImageWithPlaceholder
+                              <>
+                                <video
+                                  className="h-full w-full object-cover"
                                   src={itemSrc}
-                                  alt={itemAlt}
-                                  title={itemTitle}
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  preload={
+                                    selectedVideoIndex === 1
+                                      ? "auto"
+                                      : "metadata"
+                                  }
                                 />
-                              </div>
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                  <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                    {itemTitle || ""}
+                                  </h3>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="absolute inset-0">
+                                  <ImageWithPlaceholder
+                                    src={itemSrc}
+                                    alt={itemAlt}
+                                    title={itemTitle}
+                                    className={
+                                      selectedVideoIndex === 0
+                                        ? "object-contain"
+                                        : undefined
+                                    }
+                                  />
+                                </div>
+                                {(selectedVideoIndex === 2 ||
+                                  (selectedVideoIndex === 0 && !isVideo)) &&
+                                  (image as any).title && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                      <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                        {(image as any).title || ""}
+                                      </h3>
+                                    </div>
+                                  )}
+                              </>
                             )}
                             <div
                               className={`absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
                                 selectedVideoIndex === 0
-                                  ? "bg-white/20"
+                                  ? String(image.id) === "design-zakon-poryadok"
+                                    ? "bg-black/20"
+                                    : "bg-white/20"
                                   : "bg-black/20"
                               }`}
                             />
@@ -1948,23 +2104,50 @@ export default function Home() {
                                 }}
                               >
                                 {isVideo ? (
-                                  <video
-                                    className="h-full w-full object-cover"
-                                    src={itemSrc}
-                                    autoPlay
-                                    muted
-                                    loop
-                                    playsInline
-                                    preload="auto"
-                                  />
-                                ) : (
-                                  <div className="absolute inset-0">
-                                    <ImageWithPlaceholder
+                                  <>
+                                    <video
+                                      className="h-full w-full object-cover"
                                       src={itemSrc}
-                                      alt={itemAlt}
-                                      title={itemTitle}
+                                      autoPlay
+                                      muted
+                                      loop
+                                      playsInline
+                                      preload={
+                                        selectedVideoIndex === 1
+                                          ? "auto"
+                                          : "metadata"
+                                      }
                                     />
-                                  </div>
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                      <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                        {itemTitle || ""}
+                                      </h3>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="absolute inset-0">
+                                      <ImageWithPlaceholder
+                                        src={itemSrc}
+                                        alt={itemAlt}
+                                        title={itemTitle}
+                                        className={
+                                          selectedVideoIndex === 0
+                                            ? "object-contain"
+                                            : undefined
+                                        }
+                                      />
+                                    </div>
+                                    {((selectedVideoIndex === 2 && !isVideo) ||
+                                      (selectedVideoIndex === 0 && !isVideo)) &&
+                                      (image as any).title && (
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
+                                          <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
+                                            {(image as any).title || ""}
+                                          </h3>
+                                        </div>
+                                      )}
+                                  </>
                                 )}
                                 <div
                                   className={`absolute inset-0 transition-opacity duration-500 group-hover:opacity-0 ${
