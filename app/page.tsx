@@ -9,8 +9,6 @@ import {
   useCallback,
   memo,
 } from "react";
-import { useRouter } from "next/navigation";
-import NProgress from "nprogress";
 import Image from "next/image";
 
 const slides = [
@@ -210,11 +208,12 @@ const eventsChildGalleries: Record<string, string[]> = {
   ],
 };
 
-// Видео для раздела Продакшн
+// Видео для раздела Продакшн (с постерами для быстрой загрузки)
 const prodVideos = [
   {
     id: "prod-akimat",
     src: "/new-content/prod/Акимат қайда қарап отыр.mp4",
+    poster: "/new-content/prod/akimat-poster.webp",
     title: "Акимат қайда қарап отыр",
     description:
       "Акимат қайда қарап отыр — документальный проект о том, как работают городские службы и специалисты, обеспечивающие повседневный комфорт и безопасность жителей. Сейчас фильм находится в процессе съёмок. Он показывает скрытую сторону города: энергетику, воду, транспорт, медицину, экосистему обслуживания и людей, которые делают жизнь в Астане устойчивой и удобной.",
@@ -222,6 +221,7 @@ const prodVideos = [
   {
     id: "prod-parad-pobedy",
     src: "/new-content/prod/Парад победы_.mp4",
+    poster: "/new-content/prod/parad-poster.webp",
     title: "Парад ко Дню Победы",
     description:
       "Мы обеспечили полное медиасопровождение Парада ко Дню Победы. Отсняли всё: от тяжелой военной техники и парадных расчётов до репетиций и торжественного марша. Работали в режиме реального времени — каждый репортаж выходил в день съёмки. Мы справились с экстремальными сроками и показали стране настоящий масштаб событий!",
@@ -229,6 +229,7 @@ const prodVideos = [
   {
     id: "prod-podkasty",
     src: "/new-content/prod/Подкасты и прямые эфиры.mp4",
+    poster: "/new-content/prod/podkasty-poster.webp",
     title: "Подкасты и прямые эфиры",
     description:
       "Мы производим подкасты и трансляции полного цикла: тысячи часов записей и прямых эфиров. Современная студия со звукоизоляцией, профессиональным светом, микрофонами и видеосистемами. Мы создаём контент для YouTube, Instagram и любых цифровых платформ, обеспечивая стабильное качество, чистый звук и удобный формат для зрителей.",
@@ -236,6 +237,7 @@ const prodVideos = [
   {
     id: "prod-prezidentskiy-rezerv",
     src: "/new-content/prod/Президентский резерв_.mp4",
+    poster: "/new-content/prod/prezident-poster.webp",
     title: "Президентский резерв",
     description:
       "Мы создали 16 документальных фильмов о молодых лидерах и будущих резервах Казахстана. 25 дней съёмок, 6 городов, 3 000 километров пути и 8 терабайтов материала! Проект стал одним из самых масштабных в нашей практике — глубокие интервью, поездки по разным регионам и герои, которые вдохновляют своим профессионализмом и миссией.",
@@ -365,6 +367,94 @@ const galleryImages = [
   },
 ];
 
+// Компонент для видео с лоадером
+const VideoWithLoader = memo(function VideoWithLoader({
+  src,
+  poster,
+}: {
+  src: string;
+  poster?: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      setIsWaiting(false);
+    };
+
+    const handleWaiting = () => {
+      if (video.paused) {
+        setIsPaused(true);
+        setIsWaiting(true);
+      } else {
+        setIsWaiting(true);
+      }
+    };
+
+    const handlePlaying = () => {
+      setIsPaused(false);
+      setIsWaiting(false);
+    };
+
+    const handlePause = () => {
+      setIsPaused(true);
+    };
+
+    const handleLoadStart = () => {
+      setIsLoading(true);
+    };
+
+    video.addEventListener("canplay", handleCanPlay);
+    video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("playing", handlePlaying);
+    video.addEventListener("pause", handlePause);
+    video.addEventListener("loadstart", handleLoadStart);
+
+    return () => {
+      video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("pause", handlePause);
+      video.removeEventListener("loadstart", handleLoadStart);
+    };
+  }, []);
+
+  const showLoader = isLoading || (isPaused && isWaiting);
+
+  return (
+    <div className="relative h-full w-full">
+      <video
+        ref={videoRef}
+        className="h-full w-full object-cover"
+        src={src}
+        poster={poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="none"
+      />
+      {showLoader && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
+            <p className="text-sm font-medium text-white/80">
+              Загрузка видео...
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
 // Мемоизированный компонент для изображений - предотвращает ненужные ререндеры
 const ImageWithPlaceholder = memo(function ImageWithPlaceholder({
   src,
@@ -440,9 +530,9 @@ const ImageWithPlaceholder = memo(function ImageWithPlaceholder({
 });
 
 export default function Home() {
-  const router = useRouter();
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const galleryScrollRef = useRef<HTMLDivElement | null>(null);
+  const prodVideosPreloaded = useRef(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [hoveredVideoIndex, setHoveredVideoIndex] = useState<number | null>(
     null
@@ -458,6 +548,43 @@ export default function Home() {
   const [selectedVideoIndex, setSelectedVideoIndex] = useState<number | null>(
     null
   );
+
+  // Состояние модального окна
+  const [modalType, setModalType] = useState<string | null>(null);
+  const [modalId, setModalId] = useState<string | null>(null);
+
+  // Функция открытия модального окна
+  const openModal = useCallback((type: string, id: string) => {
+    setModalType(type);
+    setModalId(id);
+  }, []);
+
+  // Функция закрытия модального окна
+  const closeModal = useCallback(() => {
+    setModalType(null);
+    setModalId(null);
+  }, []);
+
+  // Предзагрузка видео из prod раздела
+  const preloadProdVideos = useCallback(() => {
+    if (prodVideosPreloaded.current) return;
+    prodVideosPreloaded.current = true;
+
+    // Предзагружаем постеры (маленькие, быстрые)
+    prodVideos.forEach((video) => {
+      const img = new window.Image();
+      img.src = video.poster;
+    });
+
+    // Предзагружаем видео с низким приоритетом
+    prodVideos.forEach((video) => {
+      const link = document.createElement("link");
+      link.rel = "prefetch";
+      link.as = "video";
+      link.href = video.src;
+      document.head.appendChild(link);
+    });
+  }, []);
 
   useEffect(() => {
     // Загружаем только первые 5 секунды для максимально быстрого старта
@@ -1177,7 +1304,15 @@ export default function Home() {
                   } as React.CSSProperties & { "--flex-grow": number }
                 }
                 data-flex-grow={flexGrow}
-                onMouseEnter={() => !isMobile && setHoveredVideoIndex(index)}
+                onMouseEnter={() => {
+                  if (!isMobile) {
+                    setHoveredVideoIndex(index);
+                    // Предзагружаем видео из prod при hover на второй слайд
+                    if (index === 1) {
+                      preloadProdVideos();
+                    }
+                  }
+                }}
                 onMouseLeave={() => !isMobile && setHoveredVideoIndex(null)}
                 onClick={handleClick}
               >
@@ -1320,7 +1455,7 @@ export default function Home() {
 
             <div
               ref={galleryScrollRef}
-              className="gallery-scroll h-full w-full overflow-y-auto overflow-x-hidden md:overflow-x-auto md:overflow-y-hidden px-4 sm:px-6 py-20"
+              className="gallery-scroll h-full w-full overflow-y-auto overflow-x-hidden md:overflow-x-auto md:overflow-y-hidden sm:px-6 py-20"
               style={{
                 animation: "galleryContainerFade 0.8s ease-out",
               }}
@@ -1362,17 +1497,12 @@ export default function Home() {
                     <div
                       key={imageId}
                       onClick={() => {
-                        if (typeof window !== "undefined") {
-                          NProgress.start();
-                        }
                         if (selectedVideoIndex === 0) {
-                          router.push(`/gallery/design/${imageId}`);
+                          openModal("design", String(imageId));
                         } else if (selectedVideoIndex === 1) {
-                          router.push(`/gallery/prod/${imageId}`);
-                        } else if (selectedVideoIndex === 2) {
-                          router.push(`/gallery/events/${imageId}`);
+                          openModal("prod", String(imageId));
                         } else {
-                          router.push(`/gallery/${imageId}`);
+                          openModal("events", String(imageId));
                         }
                       }}
                       className={`group relative w-full cursor-pointer overflow-hidden backdrop-blur-sm ${
@@ -1394,13 +1524,12 @@ export default function Home() {
                           <video
                             className="h-full w-full object-cover"
                             src={videoSrc}
+                            poster={(item as any).poster}
                             autoPlay
                             muted
                             loop
                             playsInline
-                            preload={
-                              selectedVideoIndex === 1 ? "auto" : "metadata"
-                            }
+                            preload="none"
                           />
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
                             <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
@@ -1457,6 +1586,7 @@ export default function Home() {
                       ? eventsMainGallery
                       : galleryImages;
                   const isVideo = selectedVideoIndex === 1;
+                  const isEvents = selectedVideoIndex === 2;
                   // Для видео используем одинаковые размеры, чтобы все были видны
                   const sizeVariants = isVideo
                     ? [
@@ -1479,6 +1609,41 @@ export default function Home() {
                           isLarge: false,
                         },
                         {
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                      ]
+                    : isEvents
+                    ? [
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          width: "w-64",
+                          widthTablet: "sm:w-80",
+                          widthDesktop: "lg:w-[648px]",
+                          isLarge: true,
+                        },
+                        {
+                          width: "w-32",
+                          widthTablet: "sm:w-40",
+                          widthDesktop: "lg:w-80",
+                          isLarge: false,
+                        },
+                        {
+                          // НИШ - увеличиваем ширину
+                          width: "w-80",
+                          widthTablet: "sm:w-96",
+                          widthDesktop: "lg:w-[500px]",
+                          isLarge: false,
+                        },
+                        {
+                          // Нур Отан - увеличиваем ширину
                           width: "w-80",
                           widthTablet: "sm:w-96",
                           widthDesktop: "lg:w-[500px]",
@@ -1727,13 +1892,10 @@ export default function Home() {
                             <div
                               key={item.id}
                               onClick={() => {
-                                if (typeof window !== "undefined") {
-                                  NProgress.start();
-                                }
                                 if (isVideo) {
-                                  router.push(`/gallery/prod/${item.id}`);
+                                  openModal("prod", String(item.id));
                                 } else if (isDesign) {
-                                  router.push(`/gallery/design/${item.id}`);
+                                  openModal("design", String(item.id));
                                 }
                               }}
                               className={`group relative cursor-pointer overflow-hidden backdrop-blur-sm ${bgColor}`}
@@ -1747,15 +1909,12 @@ export default function Home() {
                                   <video
                                     className="h-full w-full object-cover"
                                     src={item.src}
+                                    poster={(item as any).poster}
                                     autoPlay
                                     muted
                                     loop
                                     playsInline
-                                    preload={
-                                      selectedVideoIndex === 1
-                                        ? "auto"
-                                        : "metadata"
-                                    }
+                                    preload="none"
                                   />
                                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
                                     <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
@@ -1876,17 +2035,12 @@ export default function Home() {
                           <div
                             key={image.id || image.src}
                             onClick={() => {
-                              if (typeof window !== "undefined") {
-                                NProgress.start();
-                              }
                               if (selectedVideoIndex === 0) {
-                                router.push(`/gallery/design/${image.id}`);
+                                openModal("design", String(image.id));
                               } else if (selectedVideoIndex === 1) {
-                                router.push(`/gallery/prod/${image.id}`);
-                              } else if (selectedVideoIndex === 2) {
-                                router.push(`/gallery/events/${image.id}`);
+                                openModal("prod", String(image.id));
                               } else {
-                                router.push(`/gallery/${image.id}`);
+                                openModal("events", String(image.id));
                               }
                             }}
                             className={`group relative ${
@@ -1911,18 +2065,9 @@ export default function Home() {
                           >
                             {isVideo ? (
                               <>
-                                <video
-                                  className="h-full w-full object-cover"
+                                <VideoWithLoader
                                   src={itemSrc}
-                                  autoPlay
-                                  muted
-                                  loop
-                                  playsInline
-                                  preload={
-                                    selectedVideoIndex === 1
-                                      ? "auto"
-                                      : "metadata"
-                                  }
+                                  poster={(image as any).poster}
                                 />
                                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
                                   <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
@@ -2071,17 +2216,12 @@ export default function Home() {
                               <div
                                 key={image.id || image.src}
                                 onClick={() => {
-                                  if (typeof window !== "undefined") {
-                                    NProgress.start();
-                                  }
                                   if (selectedVideoIndex === 0) {
-                                    router.push(`/gallery/design/${image.id}`);
+                                    openModal("design", String(image.id));
                                   } else if (selectedVideoIndex === 1) {
-                                    router.push(`/gallery/prod/${image.id}`);
-                                  } else if (selectedVideoIndex === 2) {
-                                    router.push(`/gallery/events/${image.id}`);
+                                    openModal("prod", String(image.id));
                                   } else {
-                                    router.push(`/gallery/${image.id}`);
+                                    openModal("events", String(image.id));
                                   }
                                 }}
                                 className={`group relative ${size.width} ${
@@ -2108,15 +2248,12 @@ export default function Home() {
                                     <video
                                       className="h-full w-full object-cover"
                                       src={itemSrc}
+                                      poster={(image as any).poster}
                                       autoPlay
                                       muted
                                       loop
                                       playsInline
-                                      preload={
-                                        selectedVideoIndex === 1
-                                          ? "auto"
-                                          : "metadata"
-                                      }
+                                      preload="none"
                                     />
                                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 md:p-5">
                                       <h3 className="text-white text-base md:text-xl font-semibold drop-shadow-lg">
@@ -2176,7 +2313,7 @@ export default function Home() {
           onClick={() => setIsMenuOpen(false)}
         >
           <div
-            className="gallery-scroll relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-(--color-deep-forest) border border-white/20 p-4 sm:p-6 md:p-8 shadow-2xl"
+            className="gallery-scroll relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-(--color-deep-forest) border border-white/20 sm:p-6 md:p-8 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "fadeIn 0.3s ease-out",
@@ -2509,6 +2646,407 @@ export default function Home() {
           </svg>
         )}
       </button>
+
+      {/* Модальное окно для деталей галереи */}
+      {modalType && modalId && (
+        <GalleryModal
+          type={modalType}
+          id={modalId}
+          onClose={closeModal}
+          designMainGallery={designMainGallery}
+          designChildGalleries={designChildGalleries}
+          eventsMainGallery={eventsMainGallery}
+          eventsChildGalleries={eventsChildGalleries}
+          prodVideos={prodVideos}
+        />
+      )}
+    </div>
+  );
+}
+
+// Компонент модального окна для деталей галереи
+function GalleryModal({
+  type,
+  id,
+  onClose,
+  designMainGallery: designMain,
+  designChildGalleries: designChild,
+  eventsMainGallery: eventsMain,
+  eventsChildGalleries: eventsChild,
+  prodVideos: prod,
+}: {
+  type: string;
+  id: string;
+  onClose: () => void;
+  designMainGallery: any;
+  designChildGalleries: any;
+  eventsMainGallery: any;
+  eventsChildGalleries: any;
+  prodVideos: any;
+}) {
+  const galleryScrollRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [content, setContent] = useState<any>(null);
+  const [childImages, setChildImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (type === "design") {
+      const image = designMain.find((img: any) => img.id === id);
+      if (image) {
+        setContent(image);
+        setChildImages(designChild[image.childFolder] || []);
+      }
+    } else if (type === "events") {
+      const image = eventsMain.find((img: any) => img.id === id);
+      if (image) {
+        setContent(image);
+        setChildImages(eventsChild[image.childFolder] || []);
+      }
+    } else if (type === "prod") {
+      const video = prod.find((v: any) => v.id === id);
+      if (video) {
+        setContent(video);
+      }
+    }
+  }, [type, id, designMain, designChild, eventsMain, eventsChild, prod]);
+
+  useEffect(() => {
+    if (videoRef.current && type === "prod") {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [content, type]);
+
+  // Обработчик wheel теперь на элементе через onWheel prop
+
+  useEffect(() => {
+    // Блокируем скролл фона при открытой модалке (только на десктопе)
+    // На мобилке модальное окно само скроллится
+    if (window.innerWidth >= 768) {
+      document.body.style.overflow = "hidden";
+    }
+
+    // Закрытие по Escape
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      if (window.innerWidth >= 768) {
+        document.body.style.overflow = "";
+      }
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [onClose]);
+
+  if (!content) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[10000] overflow-y-auto bg-(--color-deep-forest) text-(--color-mist)"
+      style={{
+        overflowX: "hidden",
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="min-h-screen px-4 py-4 md:px-0">
+        <button
+          onClick={onClose}
+          className="fixed top-6 left-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/40 backdrop-blur-md text-white transition-all duration-300 hover:border-(--color-peach) hover:bg-black/60 hover:scale-110"
+          aria-label="Назад"
+          style={{
+            animation: "slideUp 0.6s ease-out",
+          }}
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <div className="min-h-screen">
+          <div className="w-full max-w-5xl mx-auto">
+            <div
+              style={{
+                animation: "galleryContainerFade 0.8s ease-out",
+              }}
+            >
+              {/* Баннер */}
+              <div
+                className={`relative mb-8 overflow-hidden rounded-2xl borderbackdrop-blur-sm h-[300px] md:h-[600px] ${
+                  type === "prod"
+                    ? "bg-tranparent"
+                    : id === "design-zakon-poryadok"
+                    ? "bg-black"
+                    : type === "events"
+                    ? "bg-transparent"
+                    : "bg-white"
+                }`}
+                style={{
+                  animation:
+                    "galleryScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                }}
+              >
+                {type === "prod" ? (
+                  <>
+                    <video
+                      ref={videoRef}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      src={content.src}
+                      poster={content.poster}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  </>
+                ) : (
+                  <ImageWithPlaceholder
+                    src={content.src}
+                    alt={content.alt}
+                    title={content.title}
+                    priority={true}
+                    className="h-full w-full object-contain"
+                  />
+                )}
+              </div>
+
+              {/* Описание */}
+              <div
+                className="text-center mb-12"
+                style={{
+                  animation:
+                    "gallerySlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both",
+                }}
+              >
+                <h1 className="mb-6 text-4xl font-semibold text-white md:text-6xl">
+                  {content.title}
+                </h1>
+                <p className="mx-auto max-w-2xl text-lg leading-relaxed text-white/80 md:text-xl">
+                  {content.description}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Дочерняя галерея (только для design и events) */}
+          {childImages.length > 0 && (
+            <div
+              className="mt-12 w-full"
+              style={{
+                animation: "galleryFade 0.8s ease-out 0.4s both",
+              }}
+            >
+              <div className="hidden md:block w-full">
+                <div
+                  ref={galleryScrollRef}
+                  className="gallery-scroll h-[600px] overflow-x-auto overflow-y-hidden"
+                  style={{
+                    width: "100vw",
+                    marginLeft: "calc(-50vw + 50%)",
+                  }}
+                  onWheel={(e) => {
+                    if (window.innerWidth >= 768 && galleryScrollRef.current) {
+                      const galleryElement = galleryScrollRef.current;
+                      const scrollLeft = galleryElement.scrollLeft;
+                      const maxScrollLeft = Math.max(
+                        0,
+                        galleryElement.scrollWidth - galleryElement.clientWidth
+                      );
+                      const modalContainer = galleryElement.closest(
+                        ".fixed.inset-0"
+                      ) as HTMLElement;
+
+                      // Если галерея не имеет контента для скролла - разрешаем страничный скролл
+                      if (maxScrollLeft <= 0) {
+                        return;
+                      }
+
+                      // Скролл вверх (deltaY < 0) - скроллим галерею влево
+                      if (e.deltaY < 0) {
+                        // Если уже в самом начале галереи (scrollLeft === 0)
+                        if (scrollLeft <= 0) {
+                          // Разрешаем страничный скролл - НЕ preventDefault и НЕ блокируем
+                          // Скроллим модальное окно вверх
+                          if (modalContainer) {
+                            modalContainer.scrollBy({
+                              top: -e.deltaY,
+                              behavior: "auto",
+                            });
+                          }
+                          // Не вызываем preventDefault, чтобы скролл страницы работал
+                          return;
+                        } else {
+                          // Скроллим ТОЛЬКО галерею влево, БЛОКИРУЕМ страничный скролл
+                          // Сохраняем текущий scrollTop модального окна ДО обработки
+                          const savedScrollTop = modalContainer
+                            ? modalContainer.scrollTop
+                            : 0;
+
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const newScrollLeft = Math.max(
+                            0,
+                            scrollLeft + e.deltaY
+                          );
+                          galleryElement.scrollLeft = newScrollLeft;
+
+                          // Принудительно блокируем скролл модального окна
+                          if (modalContainer) {
+                            // Блокируем скролл модального окна немедленно и в следующем кадре
+                            modalContainer.scrollTop = savedScrollTop;
+                            requestAnimationFrame(() => {
+                              modalContainer.scrollTop = savedScrollTop;
+                            });
+                            requestAnimationFrame(() => {
+                              modalContainer.scrollTop = savedScrollTop;
+                            });
+                          }
+                        }
+                      }
+                      // Скролл вниз (deltaY > 0) - скроллим галерею вправо
+                      else if (e.deltaY > 0) {
+                        // Если уже в самом конце галереи
+                        if (scrollLeft >= maxScrollLeft - 1) {
+                          // Разрешаем страничный скролл - НЕ preventDefault и НЕ блокируем
+                          // Скроллим модальное окно вниз
+                          if (modalContainer) {
+                            modalContainer.scrollBy({
+                              top: e.deltaY,
+                              behavior: "auto",
+                            });
+                          }
+                          // Не вызываем preventDefault, чтобы скролл страницы работал
+                          return;
+                        } else {
+                          // Скроллим ТОЛЬКО галерею вправо, БЛОКИРУЕМ страничный скролл
+                          // Сохраняем текущий scrollTop модального окна ДО обработки
+                          const savedScrollTop = modalContainer
+                            ? modalContainer.scrollTop
+                            : 0;
+
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const newScrollLeft = Math.min(
+                            maxScrollLeft,
+                            scrollLeft + e.deltaY
+                          );
+                          galleryElement.scrollLeft = newScrollLeft;
+
+                          // Принудительно блокируем скролл модального окна
+                          if (modalContainer) {
+                            // Блокируем скролл модального окна немедленно и в следующем кадре
+                            modalContainer.scrollTop = savedScrollTop;
+                            requestAnimationFrame(() => {
+                              modalContainer.scrollTop = savedScrollTop;
+                            });
+                            requestAnimationFrame(() => {
+                              modalContainer.scrollTop = savedScrollTop;
+                            });
+                          }
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <div
+                    className="flex gap-2 h-full"
+                    style={{ width: "max-content" }}
+                  >
+                    {childImages.map((imageSrc, index) => {
+                      const animationTypes = [
+                        "gallerySlideUp",
+                        "gallerySlideRight",
+                        "gallerySlideLeft",
+                        "galleryScale",
+                        "galleryFade",
+                      ];
+                      const animationType =
+                        animationTypes[index % animationTypes.length];
+                      const delay = index * 0.08;
+                      const fileName = imageSrc.split("/").pop() || "";
+
+                      return (
+                        <div
+                          key={imageSrc}
+                          className="group relative w-[600px] h-full cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm flex-shrink-0"
+                          style={{
+                            animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
+                            opacity: 0,
+                          }}
+                        >
+                          <div className="absolute inset-0">
+                            <ImageWithPlaceholder
+                              src={imageSrc}
+                              alt={fileName}
+                              title={fileName}
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:hidden grid grid-cols-1 gap-4">
+                {childImages.map((imageSrc, index) => {
+                  const animationTypes = [
+                    "gallerySlideUp",
+                    "gallerySlideRight",
+                    "gallerySlideLeft",
+                    "galleryScale",
+                    "galleryFade",
+                  ];
+                  const animationType =
+                    animationTypes[index % animationTypes.length];
+                  const delay = index * 0.08;
+                  const fileName = imageSrc.split("/").pop() || "";
+
+                  return (
+                    <div
+                      key={imageSrc}
+                      className="group relative w-full aspect-square cursor-pointer overflow-hidden bg-black/30 backdrop-blur-sm"
+                      style={{
+                        animation: `${animationType} 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s both`,
+                        opacity: 0,
+                      }}
+                    >
+                      <div className="absolute inset-0">
+                        <ImageWithPlaceholder
+                          src={imageSrc}
+                          alt={fileName}
+                          title={fileName}
+                        />
+                      </div>
+                      <div className="hidden md:block absolute inset-0 bg-black/20 transition-opacity duration-500 group-hover:opacity-0" />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

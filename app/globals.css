@@ -23,6 +23,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden; /* Убираем горизонтальный скролл у всей страницы */
 }
 
 body {
@@ -32,6 +33,7 @@ body {
   /* GPU ускорение для плавных анимаций */
   transform: translateZ(0);
   backface-visibility: hidden;
+  overflow-x: hidden; /* Убираем горизонтальный скролл у всей страницы */
 }
 
 * {

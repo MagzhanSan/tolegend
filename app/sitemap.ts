@@ -12,14 +12,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const galleryImages = Array.from({ length: 20 }, (_, i) => i + 1);
-
-  const galleryRoutes = galleryImages.map((id) => ({
-    url: `${baseUrl}/gallery/${id}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
-
-  return [...routes, ...galleryRoutes];
+  return routes;
 }

@@ -195,26 +195,30 @@ export default function RootLayout({
         />
         <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
 
-        {/* Prefetch видео из prod секции */}
+        {/* Preload постеров для prod видео (маленькие, быстрые) */}
         <link
-          rel="prefetch"
-          href="/new-content/prod/Акимат қайда қарап отыр.mp4"
-          as="video"
+          rel="preload"
+          href="/new-content/prod/akimat-poster.webp"
+          as="image"
+          type="image/webp"
         />
         <link
-          rel="prefetch"
-          href="/new-content/prod/Парад победы_.mp4"
-          as="video"
+          rel="preload"
+          href="/new-content/prod/parad-poster.webp"
+          as="image"
+          type="image/webp"
         />
         <link
-          rel="prefetch"
-          href="/new-content/prod/Подкасты и прямые эфиры.mp4"
-          as="video"
+          rel="preload"
+          href="/new-content/prod/podkasty-poster.webp"
+          as="image"
+          type="image/webp"
         />
         <link
-          rel="prefetch"
-          href="/new-content/prod/Президентский резерв_.mp4"
-          as="video"
+          rel="preload"
+          href="/new-content/prod/prezident-poster.webp"
+          as="image"
+          type="image/webp"
         />
 
         <script
